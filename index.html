@@ -1,902 +1,504 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <title>Premium IMEI Checker App</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    href="https://fonts.googleapis.com/icon?family=Material+Icons"
-    rel="stylesheet"
-  />
-  <style>
-    /* Reset and base */
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text-primary);
-      line-height: 1.5;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Premium IMEI Checker App - Fixed API Example</title>
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap"
+  rel="stylesheet"
+/>
+<link
+  href="https://fonts.googleapis.com/icon?family=Material+Icons"
+  rel="stylesheet"
+/>
+<style>
+  /* Base and reset */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; font-family: 'Inter', sans-serif;
+    background: var(--bg); color: var(--text-primary);
+    line-height: 1.5; min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
 
-    :root {
-      --color-primary: #6366f1; /* Indigo 500 */
-      --color-primary-light: #818cf8;
-      --color-primary-dark: #4f46e5;
-      --color-bg-light: #f9fafb;
-      --color-bg-dark: #121212;
-      --bg: var(--color-bg-light);
-      --surface: rgba(255 255 255 / 0.6);
-      --surface-glass: rgba(255 255 255 / 0.15);
-      --surface-glass-hover: rgba(255 255 255 / 0.25);
-      --text-primary: #111827;
-      --text-secondary: #6b7280;
-      --text-inverse: #eee;
-      --shadow-elevation: 0 8px 24px rgba(0 0 0 / 0.1);
-      --scrollbar-bg: #d4d4d8;
-      --scrollbar-thumb: var(--color-primary);
-      --focus-color: var(--color-primary);
-      --error-color: #ef4444;
-    }
-    [data-theme="dark"] {
-      --bg: var(--color-bg-dark);
-      --surface: rgba(30 30 30 / 0.6);
-      --surface-glass: rgba(30 30 30 / 0.45);
-      --surface-glass-hover: rgba(30 30 30 / 0.65);
-      --text-primary: #e0e7ff;
-      --text-secondary: #9ca3af;
-      --text-inverse: #121212;
-      --shadow-elevation: 0 8px 24px rgba(0 0 0 / 0.7);
-      --scrollbar-bg: #3f3f46;
-      --scrollbar-thumb: var(--color-primary-light);
-      --focus-color: var(--color-primary-light);
-      --error-color: #f87171;
-    }
+  :root {
+    --color-primary: #6366f1;
+    --color-primary-light: #818cf8;
+    --color-primary-dark: #4f46e5;
+    --color-bg-light: #f9fafb;
+    --color-bg-dark: #121212;
+    --bg: var(--color-bg-light);
+    --surface: rgba(255 255 255 / 0.6);
+    --surface-glass: rgba(255 255 255 / 0.15);
+    --surface-glass-hover: rgba(255 255 255 / 0.25);
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --text-inverse: #eee;
+    --shadow-elevation: 0 8px 24px rgba(0 0 0 / 0.1);
+    --focus-color: var(--color-primary);
+    --error-color: #ef4444;
+  }
+  [data-theme="dark"] {
+    --bg: var(--color-bg-dark);
+    --surface: rgba(30 30 30 / 0.6);
+    --surface-glass: rgba(30 30 30 / 0.45);
+    --surface-glass-hover: rgba(30 30 30 / 0.65);
+    --text-primary: #e0e7ff;
+    --text-secondary: #9ca3af;
+    --text-inverse: #121212;
+    --shadow-elevation: 0 8px 24px rgba(0 0 0 / 0.7);
+    --focus-color: var(--color-primary-light);
+    --error-color: #f87171;
+  }
 
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 10px;
-      height: 10px;
-      background: var(--scrollbar-bg);
-    }
-    ::-webkit-scrollbar-thumb {
-      background-color: var(--scrollbar-thumb);
-      border-radius: 8px;
-      border: 2px solid var(--scrollbar-bg);
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: var(--color-primary-dark);
-    }
+  /* Container and layout */
+  .app {
+    max-width: 480px;
+    margin: 40px auto;
+    background: var(--surface-glass);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-radius: 24px;
+    padding: 32px 32px 48px;
+    box-shadow: var(--shadow-elevation);
+  }
 
-    /* Container grid layout: header (64px), footer(auto), sidebar(280px) and main */
-    .app {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      grid-template-rows: 64px 1fr auto;
-      grid-template-areas:
-        "header header"
-        "sidebar main"
-        "footer footer";
-      height: 100vh;
-      overflow: hidden;
-    }
+  h1 {
+    font-weight: 900;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    color: var(--color-primary);
+    margin-bottom: 0.25em;
+    user-select: none;
+  }
 
-    @media (max-width: 1023px) {
-      .app {
-        grid-template-columns: 280px 1fr;
-      }
-    }
+  p.description {
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-bottom: 1.5em;
+    user-select: none;
+  }
 
-    @media (max-width: 767px) {
-      .app {
-        grid-template-columns: 1fr;
-        grid-template-rows: 64px 1fr 56px;
-        grid-template-areas:
-          "header"
-          "main"
-          "footer";
-      }
-    }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  label {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  input[type=text] {
+    padding: 12px 14px;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    border: 2px solid #cbd5e1;
+    background: var(--surface);
+    color: var(--text-primary);
+    outline-offset: 2px;
+    transition: border-color 0.3s ease;
+  }
+  input[type=text]:focus {
+    outline: none;
+    border-color: var(--focus-color);
+    background: var(--surface-glass-hover);
+  }
+  input[type=text].invalid {
+    border-color: var(--error-color);
+    background: rgba(239,68,68,0.1);
+  }
+  .field-error {
+    color: var(--error-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: -12px;
+    margin-bottom: 10px;
+  }
 
-    /* Header */
-    header.app-header {
-      grid-area: header;
-      position: sticky;
-      top: 0;
-      height: 64px;
-      background: var(--surface-glass);
-      backdrop-filter: saturate(180%) blur(20px);
-      display: flex;
-      align-items: center;
-      padding: 0 24px;
-      justify-content: space-between;
-      box-shadow: var(--shadow-elevation);
-      z-index: 100;
-    }
+  button[type=submit] {
+    background: var(--color-primary);
+    color: white;
+    font-weight: 700;
+    padding: 14px;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 6px 16px rgba(99,102,241,0.4);
+    user-select: none;
+  }
+  button[type=submit]:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(63,63,255,0.6);
+  }
+  button[type=submit]:focus-visible {
+    outline-offset: 2px;
+    outline: 3px solid var(--focus-color);
+  }
+  button[type=submit]:disabled {
+    background: #a5b4fc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
 
-    header.app-header .brand {
-      font-weight: 900;
-      font-size: clamp(1.25rem, 2vw, 1.5rem);
-      color: var(--color-primary);
-      user-select: none;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
+  /* Result section */
+  section#result {
+    margin-top: 28px;
+    background: var(--surface-glass);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-radius: 20px;
+    padding: 24px 28px;
+    box-shadow: var(--shadow-elevation);
+    user-select: text;
+  }
+  section#result h2 {
+    font-weight: 700;
+    color: var(--color-primary);
+    font-size: 1.5rem;
+    margin-top: 0;
+  }
 
-    header.app-header nav {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-    }
+  dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.5rem 2rem;
+    margin-top: 1rem;
+  }
+  dt {
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+  dd {
+    margin: 0;
+    color: var(--text-primary);
+    word-break: break-word;
+  }
 
-    header.app-header button.theme-toggle {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--color-primary);
-      font-size: 24px;
-      display: flex;
-      align-items: center;
-      transition: color 0.3s ease;
-    }
+  img.device-image {
+    margin-top: 18px;
+    max-width: 100%;
+    border-radius: 16px;
+    box-shadow: var(--shadow-elevation);
+    user-select:none;
+  }
 
-    header.app-header button.theme-toggle:focus-visible {
-      outline-offset: 2px;
-      outline: 3px solid var(--focus-color);
-      border-radius: 4px;
-    }
+  /* Loading skeleton */
+  .loading-skeleton {
+    margin-top: 24px;
+    border-radius: 20px;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--surface-glass),
+      var(--surface-glass) 10px,
+      var(--surface-glass-hover) 10px,
+      var(--surface-glass-hover) 20px
+    );
+    animation: shimmer 1.5s linear infinite;
+    height: 140px;
+  }
 
-    /* Sidebar */
-    aside.app-sidebar {
-      grid-area: sidebar;
-      background: var(--surface-glass);
-      backdrop-filter: saturate(180%) blur(20px);
-      box-shadow: var(--shadow-elevation);
-      display: flex;
-      flex-direction: column;
-      padding: 24px 0;
-      user-select: none;
-      transition: transform 0.3s ease;
-      z-index: 90;
+  @keyframes shimmer {
+    0% {
+      background-position: 100% 0;
     }
+    100% {
+      background-position: -100% 0;
+    }
+  }
 
-    /* Collapsed sidebar for mobile */
-    aside.app-sidebar.collapsed {
-      transform: translateX(-100%);
-      position: fixed;
-      top: 64px;
-      left: 0;
-      bottom: 0;
-      width: 280px;
-      padding-top: 48px;
-      box-shadow: 2px 0 12px rgba(0 0 0 / 0.3);
-      background: var(--surface-glass);
-    }
-
-    @media (max-width: 767px) {
-      aside.app-sidebar {
-        position: fixed;
-        top: 64px;
-        left: 0;
-        bottom: 0;
-        width: 280px;
-        padding-top: 48px;
-        box-shadow: 2px 0 12px rgba(0 0 0 / 0.4);
-        background: var(--surface-glass);
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-      }
-      aside.app-sidebar.open {
-        transform: translateX(0);
-      }
-    }
-
-    aside nav {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 0 24px;
-      margin-top: 12px;
-    }
-
-    aside nav a {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 10px 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-      text-decoration: none;
-      border-radius: 12px;
-      transition: background-color 0.3s ease;
-      user-select: none;
-    }
-
-    aside nav a:hover,
-    aside nav a:focus-visible {
-      background: var(--surface-glass-hover);
-      outline: none;
-    }
-
-    aside nav a.active {
-      background: var(--color-primary);
-      color: white;
-      box-shadow: 0 0 8px var(--color-primary);
-    }
-
-    aside nav a .material-icons {
-      font-size: 24px;
-      user-select: none;
-    }
-
-    /* Sidebar toggle button on mobile */
-    button.sidebar-toggle {
-      background: none;
-      border: none;
-      color: var(--color-primary);
-      font-size: 28px;
-      cursor: pointer;
-      display: none;
-      padding: 8px;
-      margin-right: 8px;
-      user-select: none;
-      transition: color 0.3s ease;
-    }
-    button.sidebar-toggle:focus-visible {
-      outline-offset: 2px;
-      outline: 3px solid var(--focus-color);
-      border-radius: 4px;
-    }
-    @media (max-width: 767px) {
-      button.sidebar-toggle {
-        display: flex;
-        align-items: center;
-      }
-    }
-
-    /* Main content */
-    main.app-main {
-      grid-area: main;
-      padding: 32px 40px;
-      overflow-y: auto;
-      min-height: calc(100vh - 64px);
-      background: var(--bg);
-      scroll-behavior: smooth;
-    }
-
-    @media (max-width: 480px) {
-      main.app-main {
-        padding: 20px 16px;
-      }
-    }
-
-    /* Footer */
-    footer.app-footer {
-      grid-area: footer;
-      background: var(--surface-glass);
-      backdrop-filter: saturate(180%) blur(20px);
-      padding: 12px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 14px;
-      color: var(--text-secondary);
-      user-select: none;
-      box-shadow: inset 0 1px 0 rgba(255 255 255 / 0.2);
-    }
-
-    @media (max-width: 767px) {
-      footer.app-footer {
-        position: sticky;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 12px 16px;
-        font-size: 13px;
-      }
-    }
-
-    /* Form and input styling */
-    form {
-      max-width: 480px;
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    label {
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    input[type="text"] {
-      padding: 12px 14px;
-      font-size: clamp(1rem, 2vw, 1.125rem);
-      border-radius: 12px;
-      border: 2px solid #cbd5e1;
-      transition: border-color 0.3s ease;
-      background: var(--surface);
-      color: var(--text-primary);
-      outline-offset: 2px;
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--focus-color);
-      outline: none;
-      background: var(--surface-glass-hover);
-    }
-
-    input[type="text"].invalid {
-      border-color: var(--error-color);
-      background: rgba(239,68,68,0.1);
-    }
-
-    .field-error {
-      color: var(--error-color);
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-top: -14px;
-      margin-bottom: 8px;
-      user-select: none;
-    }
-
-    button[type="submit"] {
-      background: var(--color-primary);
-      color: white;
-      font-weight: 700;
-      padding: 14px;
-      border: none;
-      border-radius: 16px;
-      font-size: clamp(1.1rem, 2vw, 1.25rem);
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      user-select: none;
-      box-shadow: 0 6px 16px rgba(99,102,241,0.4);
-    }
-    button[type="submit"]:hover {
-      background: var(--color-primary-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(63,63,255,0.6);
-    }
-    button[type="submit"]:focus-visible {
-      outline-offset: 2px;
-      outline: 3px solid var(--focus-color);
-    }
-    button[type="submit"]:disabled {
-      background: #a5b4fc;
-      cursor: not-allowed;
-      box-shadow: none;
-      transform: none;
-    }
-
-    /* Result card */
-    section.result-card {
-      margin-top: 32px;
-      background: var(--surface-glass);
-      backdrop-filter: saturate(180%) blur(20px);
-      border-radius: 24px;
-      padding: 24px 32px;
-      box-shadow: var(--shadow-elevation);
-      user-select: text;
-      transition: all 0.3s ease;
-    }
-
-    section.result-card:hover {
-      box-shadow: 0 16px 48px rgba(99 102 241 / 0.4);
-    }
-
-    section.result-card h2 {
-      margin-top: 0;
-      font-weight: 900;
-      color: var(--color-primary);
-      font-size: clamp(1.5rem, 2vw, 2rem);
-      user-select: text;
-    }
-
-    section.result-card dl {
-      display: grid;
-      grid-template-columns: max-content 1fr;
-      gap: 12px 32px;
-      margin-top: 1rem;
-    }
-    section.result-card dt {
-      font-weight: 700;
-      color: var(--text-secondary);
-      user-select: text;
-    }
-    section.result-card dd {
-      margin: 0;
-      color: var(--text-primary);
-      user-select: text;
-      word-break: break-word;
-    }
-
-    /* Loading skeleton */
-    .loading-skeleton {
-      max-width: 480px;
-      margin-top: 24px;
-      border-radius: 20px;
-      background: repeating-linear-gradient(
-        -45deg,
-        var(--surface-glass),
-        var(--surface-glass) 10px,
-        var(--surface-glass-hover) 10px,
-        var(--surface-glass-hover) 20px
-      );
-      animation: shimmer 1.5s linear infinite;
-      height: 160px;
-    }
-
-    @keyframes shimmer {
-      0% {
-        background-position: 100% 0;
-      }
-      100% {
-        background-position: -100% 0;
-      }
-    }
-
-    /* Toast Notification */
-    #toast-container {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 110;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-width: 320px;
-      user-select: none;
-    }
-
-    .toast {
-      background: var(--surface-glass);
-      backdrop-filter: saturate(180%) blur(20px);
-      color: var(--text-primary);
-      padding: 14px 20px;
-      border-radius: 14px;
-      box-shadow: var(--shadow-elevation);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      animation: slide-in 0.3s ease forwards;
-      cursor: pointer;
-    }
-    .toast.success {
-      border-left: 4px solid #22c55e;
-    }
-    .toast.error {
-      border-left: 4px solid var(--error-color);
-      color: var(--error-color);
-    }
-    .toast .material-icons {
-      font-size: 24px;
-      user-select: none;
-      flex-shrink: 0;
-    }
-    .toast-message {
-      flex: 1;
-      font-weight: 600;
-      user-select: none;
-    }
-    @keyframes slide-in {
-      from {
-        transform: translateX(120%);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-
-  </style>
+  /* Toast notification */
+  #toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--surface-glass);
+    backdrop-filter: saturate(180%) blur(20px);
+    padding: 14px 20px;
+    border-radius: 14px;
+    box-shadow: var(--shadow-elevation);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    user-select: none;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: opacity 0.5s ease;
+  }
+  #toast.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+  #toast .material-icons {
+    font-size: 24px;
+  }
+  #toast.success {
+    border-left: 4px solid #22c55e;
+  }
+  #toast.error {
+    border-left: 4px solid var(--error-color);
+    color: var(--error-color);
+  }
+</style>
 </head>
-<body>
-  <div class="app" role="application" aria-label="IMEI Phone Checker Application">
-    <header class="app-header" role="banner">
-      <button
-        class="sidebar-toggle material-icons"
-        aria-label="Toggle sidebar navigation"
-        aria-expanded="false"
-        aria-controls="sidebar"
-        title="Toggle Menu"
-        tabindex="0"
-      >menu</button>
-      <div class="brand" aria-label="Application brand">IMEI CHECKER</div>
-      <nav role="navigation" aria-label="User controls">
-        <button
-          class="theme-toggle material-icons"
-          aria-label="Toggle light and dark theme"
-          title="Toggle Theme"
-        >dark_mode</button>
-      </nav>
-    </header>
+<body data-theme="light">
+<div class="app" role="main" aria-label="Premium IMEI Checker Application">
+  <h1>Check Your Phone IMEI</h1>
+  <p class="description">Enter your 15-digit IMEI number to decode your device information using SamFw API.</p>
+  <form id="imeiForm" novalidate aria-describedby="errorMsg" aria-live="assertive">
+    <label for="imeiInput">IMEI Number</label>
+    <input
+      type="text"
+      id="imeiInput"
+      name="imei"
+      inputmode="numeric"
+      maxlength="15"
+      pattern="\\d{15}"
+      autocomplete="off"
+      spellcheck="false"
+      aria-required="true"
+      aria-invalid="false"
+      placeholder="e.g. 352099001761481"
+      required
+    />
+    <div id="errorMsg" class="field-error" role="alert" aria-live="assertive"></div>
+    <button type="submit" id="submitBtn" disabled>Decode IMEI</button>
+  </form>
 
-    <aside class="app-sidebar collapsed" id="sidebar" role="complementary" aria-label="Primary navigation sidebar">
-      <nav>
-        <a href="#" class="active" tabindex="0" aria-current="page">
-          <span class="material-icons" aria-hidden="true">smartphone</span>
-          IMEI Check
-        </a>
-        <!-- Placeholder for future nav items -->
-        <!-- 
-        <a href="#" tabindex="-1" aria-disabled="true">
-          <span class="material-icons" aria-hidden="true">settings</span>
-          Settings
-        </a>
-        -->
-      </nav>
-    </aside>
+  <div id="loading" class="loading-skeleton" aria-hidden="true" hidden></div>
 
-    <main class="app-main" tabindex="0" role="main" aria-live="polite" aria-relevant="additions">
-      <h1>Check Your Phone IMEI</h1>
-      <p>Enter your IMEI number below to decode and get detailed device information.</p>
+  <section id="result" hidden aria-live="polite" aria-atomic="true">
+    <h2>Device Information</h2>
+    <dl id="deviceDetails"></dl>
+    <img 
+      id="deviceImage"
+      class="device-image" 
+      src="" 
+      alt="" 
+      loading="lazy" 
+      onerror="this.style.display='none'" 
+    />
+  </section>
+</div>
 
-      <form id="imeiForm" novalidate autocomplete="off" aria-describedby="errmsg" aria-live="assertive">
-        <label for="imeiInput">IMEI Number</label>
-        <input
-          type="text"
-          id="imeiInput"
-          name="imei"
-          inputmode="numeric"
-          pattern="[0-9]{15}"
-          maxlength="15"
-          placeholder="Enter 15-digit IMEI"
-          aria-required="true"
-          aria-invalid="false"
-          aria-describedby="imeiHelp errmsg"
-          autocomplete="off"
-          spellcheck="false"
-          autofocus
-        />
-        <div id="imeiHelp" style="font-size: 0.85rem; color: var(--text-secondary); margin-top:-12px; margin-bottom: 14px; user-select:none;">
-          The IMEI is a 15-digit number unique to your mobile device.
-        </div>
-        <div id="errmsg" role="alert" class="field-error" aria-live="assertive" aria-atomic="true"></div>
-        <button type="submit" id="submitBtn" disabled>Decode IMEI</button>
-      </form>
+<div id="toast" role="alert" aria-live="assertive" aria-atomic="true" hidden>
+  <span class="material-icons" id="toastIcon">info</span>
+  <div id="toastMessage"></div>
+</div>
 
-      <div id="loadingIndicator" class="loading-skeleton" aria-hidden="true"></div>
+<script>
+  (() => {
+    'use strict';
 
-      <section id="resultSection" class="result-card" aria-live="polite" aria-atomic="true" hidden>
-        <h2>Device Information</h2>
-        <dl id="resultDetails"></dl>
-        <img id="deviceImage" src="" alt="" style="margin-top:16px; width:320px; max-width:100%; border-radius: 16px; box-shadow: var(--shadow-elevation); user-select:none;" loading="lazy" onerror="this.style.display='none'" />
-      </section>
-    </main>
+    const imeiForm = document.getElementById('imeiForm');
+    const imeiInput = document.getElementById('imeiInput');
+    const errorMsg = document.getElementById('errorMsg');
+    const submitBtn = document.getElementById('submitBtn');
+    const loading = document.getElementById('loading');
+    const resultSection = document.getElementById('result');
+    const deviceDetails = document.getElementById('deviceDetails');
+    const deviceImage = document.getElementById('deviceImage');
+    const toast = document.getElementById('toast');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastMessage = document.getElementById('toastMessage');
 
-    <footer class="app-footer" role="contentinfo">
-      <div>© 2024 IMEI Checker Inc.</div>
-      <div>Contact: support@imeichecker.com</div>
-    </footer>
-  </div>
-
-  <div id="toast-container" role="region" aria-live="polite" aria-atomic="false" aria-relevant="additions"></div>
-
-  <script>
-    (() => {
-      'use strict';
-
-      // DOM references
-      const sidebar = document.querySelector('.app-sidebar');
-      const sidebarToggleBtn = document.querySelector('button.sidebar-toggle');
-      const themeToggleBtn = document.querySelector('button.theme-toggle');
-      const body = document.body;
-      const imeiInput = document.getElementById('imeiInput');
-      const form = document.getElementById('imeiForm');
-      const submitBtn = document.getElementById('submitBtn');
-      const errmsgDiv = document.getElementById('errmsg');
-      const loadingIndicator = document.getElementById('loadingIndicator');
-      const resultSection = document.getElementById('resultSection');
-      const resultDetails = document.getElementById('resultDetails');
-      const deviceImage = document.getElementById('deviceImage');
-      const toastContainer = document.getElementById('toast-container');
-
-      // Sidebar toggle for mobile
-      function toggleSidebar() {
-        const isOpen = sidebar.classList.contains('open');
-        if (isOpen) {
-          sidebar.classList.remove('open');
-          sidebarToggleBtn.setAttribute('aria-expanded', 'false');
-        } else {
-          sidebar.classList.add('open');
-          sidebarToggleBtn.setAttribute('aria-expanded', 'true');
-          // trap focus inside sidebar if open (optional enhancement)
-        }
+    // Enable submit if valid 15-digit number (basic check)
+    imeiInput.addEventListener('input', () => {
+      const val = imeiInput.value.trim();
+      const isValid = /^\d{15}$/.test(val);
+      if (isValid) {
+        imeiInput.classList.remove('invalid');
+        errorMsg.textContent = '';
+        imeiInput.setAttribute('aria-invalid', 'false');
+        submitBtn.disabled = false;
+      } else {
+        imeiInput.classList.add('invalid');
+        errorMsg.textContent = 'IMEI must be exactly 15 digits';
+        imeiInput.setAttribute('aria-invalid', 'true');
+        submitBtn.disabled = true;
       }
-      sidebarToggleBtn.addEventListener('click', toggleSidebar);
+    });
 
-      // Close sidebar if clicking outside on mobile
-      document.addEventListener('click', e => {
-        if (window.innerWidth <= 767 && sidebar.classList.contains('open')) {
-          if (!sidebar.contains(e.target) && e.target !== sidebarToggleBtn) {
-            sidebar.classList.remove('open');
-            sidebarToggleBtn.setAttribute('aria-expanded', 'false');
-          }
-        }
-      });
+    // Show toast message
+    function showToast(message, type = 'info') {
+      toastMessage.textContent = message;
+      toastIcon.textContent = type === 'success' ? 'check_circle' : (type === 'error' ? 'error' : 'info');
+      toast.className = '';
+      toast.classList.add(type);
+      toast.hidden = false;
+      toast.classList.remove('hide');
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.classList.add('hide');
+        toast._timeout2 = setTimeout(() => (toast.hidden = true), 500);
+      }, 3500);
+    }
+    // Dismiss toast on click
+    toast.addEventListener('click', () => {
+      clearTimeout(toast._timeout);
+      clearTimeout(toast._timeout2);
+      toast.classList.add('hide');
+      setTimeout(() => (toast.hidden = true), 500);
+    });
 
-      // Theme management
-      const THEME_KEY = 'imei-checker-theme';
+    // Clear previous result
+    function clearResult() {
+      deviceDetails.innerHTML = '';
+      deviceImage.src = '';
+      deviceImage.alt = '';
+      resultSection.hidden = true;
+    }
 
-      function getPreferredTheme() {
-        const saved = localStorage.getItem(THEME_KEY);
-        if (saved === 'dark' || saved === 'light') return saved;
-        // Use system preference if no saved
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      }
-
-      function applyTheme(theme) {
-        if (theme === 'dark') {
-          body.setAttribute('data-theme', 'dark');
-          themeToggleBtn.textContent = 'light_mode';
-        } else {
-          body.setAttribute('data-theme', 'light');
-          themeToggleBtn.textContent = 'dark_mode';
-        }
-      }
-
-      themeToggleBtn.addEventListener('click', () => {
-        const current = body.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        applyTheme(next);
-        localStorage.setItem(THEME_KEY, next);
-        showToast(`Switched to ${next} mode`, 'success');
-      });
-
-      // Initialize theme on load
-      applyTheme(getPreferredTheme());
-
-      // Validation and form handling
-
-      function validateIMEI(value) {
-        // Basic IMEI: 15 digits, Luhn check optional
-        if (!value) return { valid: false, message: 'IMEI cannot be empty.' };
-        const cleaned = value.replace(/\D/g, '');
-        if (cleaned.length !== 15)
-          return { valid: false, message: 'IMEI must be exactly 15 digits.' };
-        if (!/^\d{15}$/.test(cleaned))
-          return { valid: false, message: 'IMEI must contain only numbers.' };
-        if (!luhnCheck(cleaned))
-          return { valid: false, message: 'IMEI checksum is invalid.' };
-        return { valid: true, value: cleaned };
-      }
-
-      // Luhn check for IMEI validation
-      // Reference: https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity
-      function luhnCheck(imei) {
-        let sum = 0;
-        for (let i = 0; i < 15; i++) {
-          let d = parseInt(imei.charAt(i), 10);
-          if (i % 2 === 1) {
-            d *= 2;
-            if (d > 9) d -= 9;
-          }
-          sum += d;
-        }
-        return sum % 10 === 0;
-      }
-
-      imeiInput.addEventListener('input', e => {
-        const val = e.target.value;
-        const res = validateIMEI(val);
-        if (res.valid) {
-          imeiInput.classList.remove('invalid');
-          errmsgDiv.textContent = '';
-          submitBtn.disabled = false;
-        } else {
-          imeiInput.classList.add('invalid');
-          errmsgDiv.textContent = res.message;
-          submitBtn.disabled = true;
+    // Render device details
+    function renderResult(data) {
+      // sample keys from typical API response - adjust to real API keys
+      const fields = [
+        { label: 'Brand', key: 'brand' },
+        { label: 'Model', key: 'model' },
+        { label: 'Manufacturer', key: 'manufacturer' },
+        { label: 'Device Type', key: 'deviceType' },
+        { label: 'Release Year', key: 'releaseYear' },
+        { label: 'Hardware', key: 'hardware' },
+        { label: 'Operating System', key: 'os' },
+        { label: 'Country', key: 'country' },
+        { label: 'Warranty Status', key: 'warranty' },
+        { label: 'Notes', key: 'notes' }
+      ];
+      deviceDetails.innerHTML = '';
+      fields.forEach(f => {
+        if (data[f.key]) {
+          const dt = document.createElement('dt');
+          dt.textContent = f.label;
+          const dd = document.createElement('dd');
+          dd.textContent = data[f.key];
+          deviceDetails.appendChild(dt);
+          deviceDetails.appendChild(dd);
         }
       });
+      if (data.imageUrl) {
+        deviceImage.src = data.imageUrl;
+        deviceImage.alt = `${data.brand || ''} ${data.model || ''} image`.trim();
+        deviceImage.style.display = 'block';
+      } else {
+        deviceImage.style.display = 'none';
+      }
+      resultSection.hidden = false;
+    }
 
-      // Dummy IMEI device data for demonstration (in reality, you'd call a backend or API)
-      const imeiDeviceData = {
-        // Key: IMEI prefix (first 8 digits)
+    // Simulate fallback dummy data if API is not available
+    function getDummyDeviceData(imei) {
+      const prefix = imei.slice(0, 8);
+      const dummyDB = {
         '35779206': {
           brand: 'Samsung',
           model: 'Galaxy S21 Ultra',
           manufacturer: 'Samsung Electronics',
-          type: 'Smartphone',
-          releaseYear: 2021,
+          deviceType: 'Smartphone',
+          releaseYear: '2021',
           hardware: 'Exynos 2100',
           os: 'Android 11',
           country: 'South Korea',
-          image: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b7b702fb-a279-45bf-85e3-d700d0431a50.png',
           warranty: 'Valid until 2025-05-10',
           notes: '5G enabled, 12GB RAM, 128GB Storage',
-        },
-        '35391807': {
-          brand: 'Samsung',
-          model: 'Galaxy Note 20',
-          manufacturer: 'Samsung Electronics',
-          type: 'Smartphone',
-          releaseYear: 2020,
-          hardware: 'Snapdragon 865+',
-          os: 'Android 10',
-          country: 'South Korea',
-          image: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/bb35c00f-988f-4f6a-8e65-ccdcd8eaa6c0.png',
-          warranty: 'Expired since 2023-11-11',
-          notes: 'S-Pen Support, 8GB RAM, 256GB Storage',
+          imageUrl: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/fc639a2c-7c97-4098-bfd4-8ae778cc4fbc.png',
         },
         '35955506': {
           brand: 'Apple',
           model: 'iPhone 13 Pro',
           manufacturer: 'Apple Inc.',
-          type: 'Smartphone',
-          releaseYear: 2021,
+          deviceType: 'Smartphone',
+          releaseYear: '2021',
           hardware: 'A15 Bionic',
           os: 'iOS 15',
           country: 'USA',
-          image: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b1a71f10-1972-4a46-ae09-899d82005d1e.png',
           warranty: 'Valid until 2024-09-05',
           notes: 'LiDAR scanner, Triple camera, 6GB RAM',
-        },
-        '35504608': {
-          brand: 'OnePlus',
-          model: 'OnePlus 8T',
-          manufacturer: 'OnePlus',
-          type: 'Smartphone',
-          releaseYear: 2020,
-          hardware: 'Snapdragon 865',
-          os: 'Android 11',
-          country: 'China',
-          image: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/10d11830-8077-46e0-b634-cea2f7e3971b.png',
-          warranty: 'Expired',
-          notes: '120Hz AMOLED display, 12GB RAM',
+          imageUrl: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/a1bf63b6-38ea-4f3c-8584-88f02f5f72aa.png',
         }
       };
+      return dummyDB[prefix] || null;
+    }
 
-      // Lookup device info by IMEI prefix
-      function decodeIMEI(imei) {
-        // Prefix is first 8 digits of IMEI (TAC) that identifies device model
-        const prefix = imei.slice(0, 8);
-        if (imeiDeviceData[prefix]) {
-          return { found: true, data: imeiDeviceData[prefix] };
+    // Call the IMEI check API
+    async function callImeApi(imei) {
+      // Replace with real API endpoint and parameters:
+      // Example placeholder URL - this won't work unless you have a real API URL & key
+      const API_ENDPOINT = 'https://api.samfw.com/imei/check'; // placeholder
+      const API_KEY = '';  // insert your API key if required
+
+      // For this example, we simulate a real fetch with a delay and dummy data
+      // Uncomment fetch code and supply your real API URL & key if available
+
+      /* Uncomment if real API available:
+      const response = await fetch(\`\${API_ENDPOINT}?imei=\${imei}\`, {
+        headers: {
+          'Authorization': \`Bearer \${API_KEY}\`,
+          'Accept': 'application/json'
         }
-        return { found: false, data: null };
+      });
+      if (!response.ok) {
+        throw new Error(\`Failed to fetch IMEI data (Status: \${response.status})\`);
       }
+      const data = await response.json();
+      return data;
+      */
 
-      // Show toast notifications
-      function showToast(message, type = 'success', duration = 4000) {
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.role = 'alert';
-        toast.tabIndex = -1;
-        toast.innerHTML = `
-          <span class="material-icons" aria-hidden="true">${
-            type === 'success' ? 'check_circle' : 'error'
-          }</span>
-          <div class="toast-message">${message}</div>
-        `;
-        toastContainer.appendChild(toast);
+      // Simulated delay and dummy response for demo purposes:
+      return new Promise((resolve) => {
         setTimeout(() => {
-          toast.classList.add('hide');
-          toast.addEventListener('transitionend', () => toast.remove());
-        }, duration);
-        // Dismiss on click
-        toast.addEventListener('click', () => {
-          toast.remove();
-        });
-      }
-
-      // Render decoded result to DOM
-      function renderResult(deviceData, imei) {
-        resultDetails.innerHTML = `
-          <dt>IMEI</dt><dd>${imei}</dd>
-          <dt>Brand</dt><dd>${deviceData.brand}</dd>
-          <dt>Model</dt><dd>${deviceData.model}</dd>
-          <dt>Manufacturer</dt><dd>${deviceData.manufacturer}</dd>
-          <dt>Device Type</dt><dd>${deviceData.type}</dd>
-          <dt>Release Year</dt><dd>${deviceData.releaseYear}</dd>
-          <dt>Hardware</dt><dd>${deviceData.hardware}</dd>
-          <dt>Operating System</dt><dd>${deviceData.os}</dd>
-          <dt>Manufacture Country</dt><dd>${deviceData.country}</dd>
-          <dt>Warranty Status</dt><dd>${deviceData.warranty}</dd>
-          <dt>Notes</dt><dd>${deviceData.notes}</dd>
-        `;
-        deviceImage.src = deviceData.image;
-        deviceImage.alt = `Image of ${deviceData.brand} ${deviceData.model}`;
-        resultSection.hidden = false;
-      }
-
-      // Clear previous result and errors
-      function clearResult() {
-        resultDetails.innerHTML = '';
-        deviceImage.src = '';
-        deviceImage.alt = '';
-        resultSection.hidden = true;
-        errmsgDiv.textContent = '';
-      }
-
-      function showLoading(show = true) {
-        loadingIndicator.setAttribute('aria-hidden', !show);
-        loadingIndicator.style.display = show ? 'block' : 'none';
-      }
-
-      // Handle form submission
-      form.addEventListener('submit', e => {
-        e.preventDefault();
-        clearResult();
-
-        const rawInput = imeiInput.value.trim();
-        const validation = validateIMEI(rawInput);
-        if (!validation.valid) {
-          errmsgDiv.textContent = validation.message;
-          imeiInput.classList.add('invalid');
-          return;
-        }
-        const imei = validation.value;
-
-        // Show loading skeleton
-        showLoading(true);
-        submitBtn.disabled = true;
-        imeiInput.disabled = true;
-
-        // Simulate async API call with delay for UX polish
-        setTimeout(() => {
-          showLoading(false);
-          imeiInput.disabled = false;
-          submitBtn.disabled = false;
-
-          // Decode IMEI data
-          const decoded = decodeIMEI(imei);
-          if (decoded.found) {
-            renderResult(decoded.data, imei);
-            showToast('IMEI decoded successfully!', 'success');
+          const dummyData = getDummyDeviceData(imei);
+          if (dummyData) {
+            resolve(dummyData);
           } else {
-            errmsgDiv.textContent = 'Device not found for the given IMEI.';
-            imeiInput.classList.add('invalid');
-            showToast('IMEI not recognized. Try another number.', 'error');
+            resolve(null); // no data found
           }
-        }, 1600);
+        }, 1500);
       });
+    }
 
-      // Accessibility: Enable keyboard navigation on sidebar links
-      const navLinks = sidebar.querySelectorAll('a');
-      navLinks.forEach(link => {
-        link.addEventListener('keydown', e => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            link.click();
-          }
-        });
-      });
-
-      // Close sidebar on Escape key in mobile view
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && sidebar.classList.contains('open')) {
-          sidebar.classList.remove('open');
-          sidebarToggleBtn.setAttribute('aria-expanded', 'false');
-          sidebarToggleBtn.focus();
-        }
-      });
-
-      // Initialize buttons disabled by default
+    imeiForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      clearResult();
+      errorMsg.textContent = '';
       submitBtn.disabled = true;
+      imeiInput.disabled = true;
+      loading.hidden = false;
+      loading.setAttribute('aria-hidden', 'false');
 
-      // Keyboard shortcut: Ctrl+Enter submits form if valid
-      window.addEventListener('keydown', e => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-          if (!submitBtn.disabled) {
-            form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-          }
+      const imei = imeiInput.value.trim();
+
+      try {
+        const data = await callImeApi(imei);
+        loading.hidden = true;
+        loading.setAttribute('aria-hidden', 'true');
+        submitBtn.disabled = false;
+        imeiInput.disabled = false;
+        if (data) {
+          renderResult(data);
+          showToast('IMEI decoded successfully!', 'success');
+        } else {
+          errorMsg.textContent = 'No information found for this IMEI.';
+          imeiInput.classList.add('invalid');
+          showToast('IMEI not recognized.', 'error');
         }
-      });
-    })();
-  </script>
+      } catch (err) {
+        loading.hidden = true;
+        loading.setAttribute('aria-hidden', 'true');
+        submitBtn.disabled = false;
+        imeiInput.disabled = false;
+        errorMsg.textContent = 'Error fetching IMEI information. Try again later.';
+        showToast('Network error or invalid API response.', 'error');
+        console.error('IMEI API error:', err);
+      }
+    });
+
+  })();
+</script>
 </body>
 </html>
 
