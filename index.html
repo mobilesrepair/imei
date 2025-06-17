@@ -3,500 +3,538 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Premium IMEI Checker App - Fixed API Example</title>
-<link
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap"
-  rel="stylesheet"
-/>
-<link
-  href="https://fonts.googleapis.com/icon?family=Material+Icons"
-  rel="stylesheet"
-/>
+<title>Zuu Caster - Customer Database Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 <style>
-  /* Base and reset */
+  /* Reset and base styles */
   *, *::before, *::after {
     box-sizing: border-box;
   }
   body {
-    margin: 0; font-family: 'Inter', sans-serif;
-    background: var(--bg); color: var(--text-primary);
-    line-height: 1.5; min-height: 100vh;
-    display: flex; flex-direction: column;
-  }
-
-  :root {
-    --color-primary: #6366f1;
-    --color-primary-light: #818cf8;
-    --color-primary-dark: #4f46e5;
-    --color-bg-light: #f9fafb;
-    --color-bg-dark: #121212;
-    --bg: var(--color-bg-light);
-    --surface: rgba(255 255 255 / 0.6);
-    --surface-glass: rgba(255 255 255 / 0.15);
-    --surface-glass-hover: rgba(255 255 255 / 0.25);
-    --text-primary: #111827;
-    --text-secondary: #6b7280;
-    --text-inverse: #eee;
-    --shadow-elevation: 0 8px 24px rgba(0 0 0 / 0.1);
-    --focus-color: var(--color-primary);
-    --error-color: #ef4444;
-  }
-  [data-theme="dark"] {
-    --bg: var(--color-bg-dark);
-    --surface: rgba(30 30 30 / 0.6);
-    --surface-glass: rgba(30 30 30 / 0.45);
-    --surface-glass-hover: rgba(30 30 30 / 0.65);
-    --text-primary: #e0e7ff;
-    --text-secondary: #9ca3af;
-    --text-inverse: #121212;
-    --shadow-elevation: 0 8px 24px rgba(0 0 0 / 0.7);
-    --focus-color: var(--color-primary-light);
-    --error-color: #f87171;
-  }
-
-  /* Container and layout */
-  .app {
-    max-width: 480px;
-    margin: 40px auto;
-    background: var(--surface-glass);
-    backdrop-filter: saturate(180%) blur(20px);
-    border-radius: 24px;
-    padding: 32px 32px 48px;
-    box-shadow: var(--shadow-elevation);
-  }
-
-  h1 {
-    font-weight: 900;
-    font-size: clamp(1.8rem, 4vw, 2.4rem);
-    color: var(--color-primary);
-    margin-bottom: 0.25em;
-    user-select: none;
-  }
-
-  p.description {
-    color: var(--text-secondary);
-    font-weight: 600;
-    margin-bottom: 1.5em;
-    user-select: none;
-  }
-
-  form {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #f0f4f8;
+    color: #333;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 18px;
-  }
-  label {
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-  input[type=text] {
-    padding: 12px 14px;
-    font-size: 1.1rem;
-    border-radius: 12px;
-    border: 2px solid #cbd5e1;
-    background: var(--surface);
-    color: var(--text-primary);
-    outline-offset: 2px;
-    transition: border-color 0.3s ease;
-  }
-  input[type=text]:focus {
-    outline: none;
-    border-color: var(--focus-color);
-    background: var(--surface-glass-hover);
-  }
-  input[type=text].invalid {
-    border-color: var(--error-color);
-    background: rgba(239,68,68,0.1);
-  }
-  .field-error {
-    color: var(--error-color);
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-top: -12px;
-    margin-bottom: 10px;
   }
 
-  button[type=submit] {
-    background: var(--color-primary);
+  /* Header */
+  header {
+    background: linear-gradient(135deg, #0ea5e9, #2563eb);
     color: white;
-    font-weight: 700;
-    padding: 14px;
-    border: none;
-    border-radius: 16px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 6px 16px rgba(99,102,241,0.4);
-    user-select: none;
-  }
-  button[type=submit]:hover:not(:disabled) {
-    background: var(--color-primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(63,63,255,0.6);
-  }
-  button[type=submit]:focus-visible {
-    outline-offset: 2px;
-    outline: 3px solid var(--focus-color);
-  }
-  button[type=submit]:disabled {
-    background: #a5b4fc;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
-
-  /* Result section */
-  section#result {
-    margin-top: 28px;
-    background: var(--surface-glass);
-    backdrop-filter: saturate(180%) blur(20px);
-    border-radius: 20px;
-    padding: 24px 28px;
-    box-shadow: var(--shadow-elevation);
-    user-select: text;
-  }
-  section#result h2 {
-    font-weight: 700;
-    color: var(--color-primary);
-    font-size: 1.5rem;
-    margin-top: 0;
-  }
-
-  dl {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    gap: 0.5rem 2rem;
-    margin-top: 1rem;
-  }
-  dt {
-    font-weight: 700;
-    color: var(--text-secondary);
-  }
-  dd {
-    margin: 0;
-    color: var(--text-primary);
-    word-break: break-word;
-  }
-
-  img.device-image {
-    margin-top: 18px;
-    max-width: 100%;
-    border-radius: 16px;
-    box-shadow: var(--shadow-elevation);
-    user-select:none;
-  }
-
-  /* Loading skeleton */
-  .loading-skeleton {
-    margin-top: 24px;
-    border-radius: 20px;
-    background: repeating-linear-gradient(
-      -45deg,
-      var(--surface-glass),
-      var(--surface-glass) 10px,
-      var(--surface-glass-hover) 10px,
-      var(--surface-glass-hover) 20px
-    );
-    animation: shimmer 1.5s linear infinite;
-    height: 140px;
-  }
-
-  @keyframes shimmer {
-    0% {
-      background-position: 100% 0;
-    }
-    100% {
-      background-position: -100% 0;
-    }
-  }
-
-  /* Toast notification */
-  #toast {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: var(--surface-glass);
-    backdrop-filter: saturate(180%) blur(20px);
-    padding: 14px 20px;
-    border-radius: 14px;
-    box-shadow: var(--shadow-elevation);
+    padding: 20px 32px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-weight: 600;
-    color: var(--text-primary);
-    user-select: none;
-    pointer-events: auto;
-    cursor: pointer;
-    transition: opacity 0.5s ease;
+    justify-content: space-between;
+    flex-wrap: wrap;
   }
-  #toast.hide {
-    opacity: 0;
+  header h1 {
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin: 0;
+    user-select: none;
+  }
+  .search-container {
+    margin: 8px 0;
+    flex-grow: 1;
+    max-width: 400px;
+    position: relative;
+  }
+  .search-container input {
+    width: 100%;
+    padding: 10px 40px 10px 16px;
+    border-radius: 12px;
+    border: none;
+    font-size: 1rem;
+    outline-offset: 2px;
+  }
+  .search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
     pointer-events: none;
   }
-  #toast .material-icons {
-    font-size: 24px;
+  button#addCustomerBtn {
+    background-color: #0284c7;
+    border: none;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    min-width: 140px;
   }
-  #toast.success {
-    border-left: 4px solid #22c55e;
+  button#addCustomerBtn:hover,
+  button#addCustomerBtn:focus {
+    background-color: #0369a1;
   }
-  #toast.error {
-    border-left: 4px solid var(--error-color);
-    color: var(--error-color);
+  button#addCustomerBtn:focus {
+    outline: 3px solid #2563eb;
+    outline-offset: 2px;
+  }
+
+  /* Main content */
+  main {
+    flex-grow: 1;
+    padding: 32px 24px;
+    max-width: 960px;
+    margin: 0 auto 48px;
+    width: 100%;
+  }
+
+  /* Customer list */
+  #customerList {
+    display: grid;
+    gap: 20px;
+  }
+  @media (min-width:640px) {
+    #customerList {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+  }
+
+  .customer-card {
+    background: rgba(255 255 255 / 0.9);
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 4px 12px rgb(14 165 233 / 0.15);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .customer-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .customer-info {
+    font-size: 0.95rem;
+    line-height: 1.3;
+    color: #475569;
+  }
+
+  /* Card action buttons */
+  .card-actions {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+  .card-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #0ea5e9;
+    padding: 6px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .card-actions button:hover,
+  .card-actions button:focus {
+    background-color: #bae6fd;
+    outline: none;
+  }
+  .material-icons.md-18 {
+    font-size: 20px;
+    vertical-align: middle;
+  }
+
+  /* Modal for Add/Edit */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgb(15 23 42 / 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    z-index: 1000;
+  }
+  .modal-overlay.show {
+    display: flex;
+  }
+  .modal {
+    background: white;
+    border-radius: 16px;
+    max-width: 480px;
+    width: 100%;
+    padding: 24px 32px;
+    box-shadow: 0 6px 24px rgb(0 0 0 / 0.15);
+    position: relative;
+  }
+  .modal h2 {
+    margin-top: 0;
+    font-weight: 700;
+    font-size: 1.6rem;
+    color: #0ea5e9;
+  }
+  .modal form {
+    margin-top: 24px;
+  }
+  .form-field {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  .form-field label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+    color: #334155;
+  }
+  .form-field input {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    font-size: 1rem;
+    outline-offset: 2px;
+  }
+  .form-field input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px #bfdbfe;
+  }
+  .modal-footer {
+    margin-top: 32px;
+    text-align: right;
+  }
+  .modal-footer button {
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+    margin-left: 12px;
+  }
+  .btn-cancel {
+    background-color: #cbd5e1;
+    color: #475569;
+  }
+  .btn-cancel:hover,
+  .btn-cancel:focus {
+    background-color: #94a3b8;
+    color: #1e293b;
+  }
+  .btn-save {
+    background-color: #0ea5e9;
+    color: white;
+  }
+  .btn-save:hover,
+  .btn-save:focus {
+    background-color: #0284c7;
+  }
+
+  /* Accessibility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
   }
 </style>
 </head>
-<body data-theme="light">
-<div class="app" role="main" aria-label="Premium IMEI Checker Application">
-  <h1>Check Your Phone IMEI</h1>
-  <p class="description">Enter your 15-digit IMEI number to decode your device information using SamFw API.</p>
-  <form id="imeiForm" novalidate aria-describedby="errorMsg" aria-live="assertive">
-    <label for="imeiInput">IMEI Number</label>
-    <input
-      type="text"
-      id="imeiInput"
-      name="imei"
-      inputmode="numeric"
-      maxlength="15"
-      pattern="\\d{15}"
-      autocomplete="off"
-      spellcheck="false"
-      aria-required="true"
-      aria-invalid="false"
-      placeholder="e.g. 352099001761481"
-      required
-    />
-    <div id="errorMsg" class="field-error" role="alert" aria-live="assertive"></div>
-    <button type="submit" id="submitBtn" disabled>Decode IMEI</button>
-  </form>
-
-  <div id="loading" class="loading-skeleton" aria-hidden="true" hidden></div>
-
-  <section id="result" hidden aria-live="polite" aria-atomic="true">
-    <h2>Device Information</h2>
-    <dl id="deviceDetails"></dl>
-    <img 
-      id="deviceImage"
-      class="device-image" 
-      src="" 
-      alt="" 
-      loading="lazy" 
-      onerror="this.style.display='none'" 
-    />
+<body>
+<header>
+  <h1>Zuu Caster - Customer Database</h1>
+  <div class="search-container" role="search">
+    <input id="searchInput" type="search" placeholder="Search customers..." aria-label="Search customers" />
+    <span class="material-icons search-icon" aria-hidden="true">search</span>
+  </div>
+  <button id="addCustomerBtn" aria-haspopup="dialog" aria-controls="customerModal" aria-expanded="false">Add Customer</button>
+</header>
+<main>
+  <section id="customerList" aria-live="polite" aria-relevant="additions removals">
+    <!-- Customer cards injected here -->
   </section>
-</div>
+</main>
 
-<div id="toast" role="alert" aria-live="assertive" aria-atomic="true" hidden>
-  <span class="material-icons" id="toastIcon">info</span>
-  <div id="toastMessage"></div>
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+  <div class="modal" role="document">
+    <h2 id="modalTitle">Add Customer</h2>
+    <form id="customerForm" novalidate>
+      <input type="hidden" id="customerId" />
+      <div class="form-field">
+        <label for="customerName">Full Name<span aria-hidden="true">*</span></label>
+        <input type="text" id="customerName" name="customerName" required autocomplete="name" aria-required="true" />
+        <span class="sr-only" role="alert" id="errorName"></span>
+      </div>
+      <div class="form-field">
+        <label for="customerEmail">Email<span aria-hidden="true">*</span></label>
+        <input type="email" id="customerEmail" name="customerEmail" required autocomplete="email" aria-required="true" />
+        <span class="sr-only" role="alert" id="errorEmail"></span>
+      </div>
+      <div class="form-field">
+        <label for="customerPhone">Phone</label>
+        <input type="tel" id="customerPhone" name="customerPhone" autocomplete="tel" />
+      </div>
+      <div class="form-field">
+        <label for="customerCompany">Company</label>
+        <input type="text" id="customerCompany" name="customerCompany" autocomplete="organization" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn-save" id="saveBtn">Save</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
   (() => {
     'use strict';
 
-    const imeiForm = document.getElementById('imeiForm');
-    const imeiInput = document.getElementById('imeiInput');
-    const errorMsg = document.getElementById('errorMsg');
-    const submitBtn = document.getElementById('submitBtn');
-    const loading = document.getElementById('loading');
-    const resultSection = document.getElementById('result');
-    const deviceDetails = document.getElementById('deviceDetails');
-    const deviceImage = document.getElementById('deviceImage');
-    const toast = document.getElementById('toast');
-    const toastIcon = document.getElementById('toastIcon');
-    const toastMessage = document.getElementById('toastMessage');
+    const customerListEl = document.getElementById('customerList');
+    const addBtn = document.getElementById('addCustomerBtn');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalTitle = document.getElementById('modalTitle');
+    const customerForm = document.getElementById('customerForm');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const searchInput = document.getElementById('searchInput');
 
-    // Enable submit if valid 15-digit number (basic check)
-    imeiInput.addEventListener('input', () => {
-      const val = imeiInput.value.trim();
-      const isValid = /^\d{15}$/.test(val);
-      if (isValid) {
-        imeiInput.classList.remove('invalid');
-        errorMsg.textContent = '';
-        imeiInput.setAttribute('aria-invalid', 'false');
-        submitBtn.disabled = false;
-      } else {
-        imeiInput.classList.add('invalid');
-        errorMsg.textContent = 'IMEI must be exactly 15 digits';
-        imeiInput.setAttribute('aria-invalid', 'true');
-        submitBtn.disabled = true;
-      }
-    });
+    let customers = [];
+    let editingCustomerId = null;
 
-    // Show toast message
-    function showToast(message, type = 'info') {
-      toastMessage.textContent = message;
-      toastIcon.textContent = type === 'success' ? 'check_circle' : (type === 'error' ? 'error' : 'info');
-      toast.className = '';
-      toast.classList.add(type);
-      toast.hidden = false;
-      toast.classList.remove('hide');
-      clearTimeout(toast._timeout);
-      toast._timeout = setTimeout(() => {
-        toast.classList.add('hide');
-        toast._timeout2 = setTimeout(() => (toast.hidden = true), 500);
-      }, 3500);
+    // Utility: Save customers to localStorage
+    function saveCustomers() {
+      localStorage.setItem('zuuCasterCustomers', JSON.stringify(customers));
     }
-    // Dismiss toast on click
-    toast.addEventListener('click', () => {
-      clearTimeout(toast._timeout);
-      clearTimeout(toast._timeout2);
-      toast.classList.add('hide');
-      setTimeout(() => (toast.hidden = true), 500);
-    });
-
-    // Clear previous result
-    function clearResult() {
-      deviceDetails.innerHTML = '';
-      deviceImage.src = '';
-      deviceImage.alt = '';
-      resultSection.hidden = true;
+    // Utility: Load customers from localStorage
+    function loadCustomers() {
+      const data = localStorage.getItem('zuuCasterCustomers');
+      customers = data ? JSON.parse(data) : [];
     }
-
-    // Render device details
-    function renderResult(data) {
-      // sample keys from typical API response - adjust to real API keys
-      const fields = [
-        { label: 'Brand', key: 'brand' },
-        { label: 'Model', key: 'model' },
-        { label: 'Manufacturer', key: 'manufacturer' },
-        { label: 'Device Type', key: 'deviceType' },
-        { label: 'Release Year', key: 'releaseYear' },
-        { label: 'Hardware', key: 'hardware' },
-        { label: 'Operating System', key: 'os' },
-        { label: 'Country', key: 'country' },
-        { label: 'Warranty Status', key: 'warranty' },
-        { label: 'Notes', key: 'notes' }
-      ];
-      deviceDetails.innerHTML = '';
-      fields.forEach(f => {
-        if (data[f.key]) {
-          const dt = document.createElement('dt');
-          dt.textContent = f.label;
-          const dd = document.createElement('dd');
-          dd.textContent = data[f.key];
-          deviceDetails.appendChild(dt);
-          deviceDetails.appendChild(dd);
-        }
+    // Utility: Generate unique ID
+    function generateId() {
+      return 'c_' + Math.random().toString(36).substr(2, 9);
+    }
+    // Utility: Sanitize input text (simple)
+    function sanitize(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    // Render customer cards based on filter
+    function renderCustomers(filter = '') {
+      const f = filter.trim().toLowerCase();
+      customerListEl.innerHTML = '';
+      const filteredCustomers = customers.filter(c => {
+        return (
+          c.name.toLowerCase().includes(f) ||
+          c.email.toLowerCase().includes(f) ||
+          c.phone?.toLowerCase().includes(f) ||
+          c.company?.toLowerCase().includes(f)
+        );
       });
-      if (data.imageUrl) {
-        deviceImage.src = data.imageUrl;
-        deviceImage.alt = `${data.brand || ''} ${data.model || ''} image`.trim();
-        deviceImage.style.display = 'block';
-      } else {
-        deviceImage.style.display = 'none';
+      if (filteredCustomers.length === 0) {
+        customerListEl.innerHTML = '<p style="color:#64748b; text-align:center; font-style:italic;">No customers found.</p>';
+        return;
       }
-      resultSection.hidden = false;
+      filteredCustomers.forEach(c => {
+        const card = document.createElement('article');
+        card.className = 'customer-card';
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', `Customer: ${c.name}, Email: ${c.email}, Phone: ${c.phone ?? 'not provided'}, Company: ${c.company ?? 'not provided'}`);
+
+        card.innerHTML = `
+          <h3 class="customer-name">${sanitize(c.name)}</h3>
+          <p class="customer-info"><strong>Email:</strong> <a href="mailto:${sanitize(c.email)}">${sanitize(c.email)}</a></p>
+          <p class="customer-info"><strong>Phone:</strong> ${c.phone ? sanitize(c.phone) : '<em>Not provided</em>'}</p>
+          <p class="customer-info"><strong>Company:</strong> ${c.company ? sanitize(c.company) : '<em>Not provided</em>'}</p>
+          <div class="card-actions">
+            <button class="edit-btn" aria-label="Edit customer ${sanitize(c.name)}" title="Edit"><span class="material-icons md-18">edit</span></button>
+            <button class="delete-btn" aria-label="Delete customer ${sanitize(c.name)}" title="Delete"><span class="material-icons md-18">delete</span></button>
+          </div>
+        `;
+        card.querySelector('.edit-btn').addEventListener('click', () => openModal(c.id));
+        card.querySelector('.delete-btn').addEventListener('click', () => deleteCustomer(c.id));
+        customerListEl.appendChild(card);
+      });
     }
 
-    // Simulate fallback dummy data if API is not available
-    function getDummyDeviceData(imei) {
-      const prefix = imei.slice(0, 8);
-      const dummyDB = {
-        '35779206': {
-          brand: 'Samsung',
-          model: 'Galaxy S21 Ultra',
-          manufacturer: 'Samsung Electronics',
-          deviceType: 'Smartphone',
-          releaseYear: '2021',
-          hardware: 'Exynos 2100',
-          os: 'Android 11',
-          country: 'South Korea',
-          warranty: 'Valid until 2025-05-10',
-          notes: '5G enabled, 12GB RAM, 128GB Storage',
-          imageUrl: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/fc639a2c-7c97-4098-bfd4-8ae778cc4fbc.png',
-        },
-        '35955506': {
-          brand: 'Apple',
-          model: 'iPhone 13 Pro',
-          manufacturer: 'Apple Inc.',
-          deviceType: 'Smartphone',
-          releaseYear: '2021',
-          hardware: 'A15 Bionic',
-          os: 'iOS 15',
-          country: 'USA',
-          warranty: 'Valid until 2024-09-05',
-          notes: 'LiDAR scanner, Triple camera, 6GB RAM',
-          imageUrl: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/a1bf63b6-38ea-4f3c-8584-88f02f5f72aa.png',
+    // Open modal for add or edit
+    function openModal(customerId = null) {
+      editingCustomerId = customerId;
+      clearFormErrors();
+      if (customerId) {
+        const cust = customers.find(c => c.id === customerId);
+        if (!cust) return;
+        modalTitle.textContent = 'Edit Customer';
+        customerForm.customerName.value = cust.name;
+        customerForm.customerEmail.value = cust.email;
+        customerForm.customerPhone.value = cust.phone || '';
+        customerForm.customerCompany.value = cust.company || '';
+        customerForm.customerId.value = cust.id;
+      } else {
+        modalTitle.textContent = 'Add Customer';
+        customerForm.reset();
+        customerForm.customerId.value = '';
+      }
+      modalOverlay.classList.add('show');
+      modalOverlay.focus();
+      addBtn.setAttribute('aria-expanded', 'true');
+      trapFocus(modalOverlay);
+    }
+
+    // Close modal
+    function closeModal() {
+      modalOverlay.classList.remove('show');
+      addBtn.setAttribute('aria-expanded', 'false');
+      editingCustomerId = null;
+      removeTrapFocus();
+      addBtn.focus();
+    }
+
+    // Delete customer with confirmation
+    function deleteCustomer(customerId) {
+      const cust = customers.find(c => c.id === customerId);
+      if (!cust) return;
+      const confirmed = confirm(`Are you sure you want to delete customer "${cust.name}"? This action cannot be undone.`);
+      if (confirmed) {
+        customers = customers.filter(c => c.id !== customerId);
+        saveCustomers();
+        renderCustomers(searchInput.value);
+      }
+    }
+
+    // Validate form fields
+    function validateForm() {
+      clearFormErrors();
+      let valid = true;
+      const name = customerForm.customerName.value.trim();
+      const email = customerForm.customerEmail.value.trim();
+
+      if (name.length < 2) {
+        showError('errorName', 'Please enter a valid name (at least 2 characters).');
+        valid = false;
+      }
+      if (!validateEmail(email)) {
+        showError('errorEmail', 'Please enter a valid email address.');
+        valid = false;
+      }
+      return valid;
+    }
+    function clearFormErrors() {
+      document.getElementById('errorName').textContent = '';
+      document.getElementById('errorEmail').textContent = '';
+    }
+    function showError(id, message) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = message;
+    }
+    // Simple email format check
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email.toLowerCase());
+    }
+
+    // Save customer (add or update)
+    function saveCustomer(data) {
+      if (editingCustomerId) {
+        // Update
+        const index = customers.findIndex(c => c.id === editingCustomerId);
+        if (index !== -1) {
+          customers[index] = {...customers[index], ...data};
         }
+      } else {
+        // Add new
+        customers.push({
+          id: generateId(),
+          ...data
+        });
+      }
+      saveCustomers();
+    }
+
+    // Form submit handler
+    customerForm.addEventListener('submit', e => {
+      e.preventDefault();
+      if (!validateForm()) return;
+
+      const customerData = {
+        name: customerForm.customerName.value.trim(),
+        email: customerForm.customerEmail.value.trim(),
+        phone: customerForm.customerPhone.value.trim() || undefined,
+        company: customerForm.customerCompany.value.trim() || undefined
       };
-      return dummyDB[prefix] || null;
-    }
 
-    // Call the IMEI check API
-    async function callImeApi(imei) {
-      // Replace with real API endpoint and parameters:
-      // Example placeholder URL - this won't work unless you have a real API URL & key
-      const API_ENDPOINT = 'https://api.samfw.com/imei/check'; // placeholder
-      const API_KEY = '';  // insert your API key if required
+      saveCustomer(customerData);
+      renderCustomers(searchInput.value);
+      closeModal();
+    });
 
-      // For this example, we simulate a real fetch with a delay and dummy data
-      // Uncomment fetch code and supply your real API URL & key if available
-
-      /* Uncomment if real API available:
-      const response = await fetch(\`\${API_ENDPOINT}?imei=\${imei}\`, {
-        headers: {
-          'Authorization': \`Bearer \${API_KEY}\`,
-          'Accept': 'application/json'
-        }
-      });
-      if (!response.ok) {
-        throw new Error(\`Failed to fetch IMEI data (Status: \${response.status})\`);
-      }
-      const data = await response.json();
-      return data;
-      */
-
-      // Simulated delay and dummy response for demo purposes:
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          const dummyData = getDummyDeviceData(imei);
-          if (dummyData) {
-            resolve(dummyData);
-          } else {
-            resolve(null); // no data found
-          }
-        }, 1500);
-      });
-    }
-
-    imeiForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      clearResult();
-      errorMsg.textContent = '';
-      submitBtn.disabled = true;
-      imeiInput.disabled = true;
-      loading.hidden = false;
-      loading.setAttribute('aria-hidden', 'false');
-
-      const imei = imeiInput.value.trim();
-
-      try {
-        const data = await callImeApi(imei);
-        loading.hidden = true;
-        loading.setAttribute('aria-hidden', 'true');
-        submitBtn.disabled = false;
-        imeiInput.disabled = false;
-        if (data) {
-          renderResult(data);
-          showToast('IMEI decoded successfully!', 'success');
-        } else {
-          errorMsg.textContent = 'No information found for this IMEI.';
-          imeiInput.classList.add('invalid');
-          showToast('IMEI not recognized.', 'error');
-        }
-      } catch (err) {
-        loading.hidden = true;
-        loading.setAttribute('aria-hidden', 'true');
-        submitBtn.disabled = false;
-        imeiInput.disabled = false;
-        errorMsg.textContent = 'Error fetching IMEI information. Try again later.';
-        showToast('Network error or invalid API response.', 'error');
-        console.error('IMEI API error:', err);
+    // Cancel button and modal overlay close
+    cancelBtn.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', e => {
+      if (e.target === modalOverlay) closeModal();
+    });
+    // Close modal on Esc key
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && modalOverlay.classList.contains('show')) {
+        closeModal();
       }
     });
 
+    // Open modal on add button
+    addBtn.addEventListener('click', () => openModal());
+
+    // Search input filter
+    searchInput.addEventListener('input', () => renderCustomers(searchInput.value));
+
+    // Focus trap for modal
+    let lastFocusedElement = null;
+    function trapFocus(element) {
+      lastFocusedElement = document.activeElement;
+      const focusableElements = element.querySelectorAll('a[href], area[href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]');
+      if (focusableElements.length === 0) return;
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length -1];
+      element.addEventListener('keydown', trapHandler);
+      function trapHandler(e) {
+        if (e.key === 'Tab') {
+          if (e.shiftKey) {
+            if (document.activeElement === first) {
+              e.preventDefault();
+              last.focus();
+            }
+          } else {
+            if (document.activeElement === last) {
+              e.preventDefault();
+              first.focus();
+            }
+          }
+        }
+      }
+      first.focus();
+      element._trapHandler = trapHandler;
+    }
+    function removeTrapFocus() {
+      if (modalOverlay._trapHandler) {
+        modalOverlay.removeEventListener('keydown', modalOverlay._trapHandler);
+        modalOverlay._trapHandler = null;
+      }
+      if (lastFocusedElement) lastFocusedElement.focus();
+    }
+
+    // Initialization
+    function init() {
+      loadCustomers();
+      renderCustomers();
+    }
+
+    // Run app
+    init();
   })();
 </script>
 </body>
