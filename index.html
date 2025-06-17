@@ -3,19 +3,21 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Zuu Caster - Customer Database Tool</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+<title>Premium Modern Antivirus Tool</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 <style>
-  /* Reset and base styles */
-  *, *::before, *::after {
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+  /* Reset and base */
+  * {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
   }
   body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: #f0f4f8;
-    color: #333;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #6366f1cc 0%, #5eead466 100%);
+    backdrop-filter: blur(12px);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -23,519 +25,367 @@
 
   /* Header */
   header {
-    background: linear-gradient(135deg, #0ea5e9, #2563eb);
-    color: white;
-    padding: 20px 32px;
+    position: sticky;
+    top: 0;
+    height: 64px;
+    background: rgba(255 255 255 / 0.12);
+    backdrop-filter: blur(20px);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    padding: 0 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+    z-index: 100;
   }
-  header h1 {
+  header .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #f3f4f6;
+  }
+  header .material-icons {
+    font-size: 32px;
+    color: #4f46e5;
+  }
+
+  /* Layout */
+  .app-container {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: calc(100vh - 64px);
+    overflow: hidden;
+  }
+  /* Sidebar */
+  aside.sidebar {
+    background: rgba(255 255 255 / 0.08);
+    backdrop-filter: blur(20px);
+    width: 280px;
+    min-width: 280px;
+    padding: 24px 12px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    color: #e0e7ff;
+    border-right: 1px solid rgba(255 255 255 / 0.1);
+    overflow-y: auto;
+  }
+  @media (max-width: 767px) {
+    aside.sidebar {
+      position: fixed;
+      left: -300px;
+      top: 64px;
+      height: calc(100vh - 64px);
+      transition: left 0.3s ease;
+      z-index: 200;
+    }
+    aside.sidebar.show {
+      left: 0;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.4);
+    }
+  }
+  aside.sidebar h2 {
+    font-size: 1.25rem;
     font-weight: 600;
-    font-size: 1.8rem;
-    margin: 0;
-    user-select: none;
+    margin-bottom: 8px;
   }
-  .search-container {
-    margin: 8px 0;
-    flex-grow: 1;
-    max-width: 400px;
-    position: relative;
+  aside.sidebar nav ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
-  .search-container input {
-    width: 100%;
-    padding: 10px 40px 10px 16px;
+  aside.sidebar nav ul li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
     border-radius: 12px;
-    border: none;
-    font-size: 1rem;
-    outline-offset: 2px;
-  }
-  .search-icon {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
-    pointer-events: none;
-  }
-  button#addCustomerBtn {
-    background-color: #0284c7;
-    border: none;
-    color: white;
-    padding: 12px 18px;
-    border-radius: 12px;
-    font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    min-width: 140px;
   }
-  button#addCustomerBtn:hover,
-  button#addCustomerBtn:focus {
-    background-color: #0369a1;
+  aside.sidebar nav ul li:hover,
+  aside.sidebar nav ul li.active {
+    background: rgba(99, 102, 241, 0.3);
   }
-  button#addCustomerBtn:focus {
-    outline: 3px solid #2563eb;
-    outline-offset: 2px;
+  aside.sidebar nav ul li .material-icons {
+    font-size: 24px;
+    flex-shrink: 0;
+    color: #a5b4fc;
+  }
+  aside.sidebar nav ul li .badge {
+    margin-left: auto;
+    background: #f87171;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
   }
 
   /* Main content */
-  main {
-    flex-grow: 1;
-    padding: 32px 24px;
-    max-width: 960px;
-    margin: 0 auto 48px;
-    width: 100%;
+  main.content {
+    flex: 1 1 auto;
+    padding: 32px 40px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  main.content h1 {
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-weight: 800;
+    color: #e0e7ff;
   }
 
-  /* Customer list */
-  #customerList {
-    display: grid;
-    gap: 20px;
+  /* Scan section */
+  .scan-section {
+    background: rgba(255 255 255 / 0.12);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 720px;
   }
-  @media (min-width:640px) {
-    #customerList {
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    }
+  .scan-section label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #c7d2fe;
+  }
+  .scan-section input[type="file"] {
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255 255 255 / 0.06);
+    color: #c7d2fe;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .scan-section button {
+    align-self: flex-start;
+    background: #4f46e5;
+    color: white;
+    padding: 14px 32px;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+    box-shadow: 0 8px 24px rgba(79,70,229,0.4);
+  }
+  .scan-section button:hover:not(:disabled) {
+    background: #4338ca;
+  }
+  .scan-section button:disabled {
+    background: #a5b4fc;
+    cursor: not-allowed;
+    box-shadow: none;
   }
 
-  .customer-card {
-    background: rgba(255 255 255 / 0.9);
+  /* Results */
+  .results {
+    min-height: 140px;
+    background: rgba(255 255 255 / 0.06);
     border-radius: 16px;
     padding: 20px 24px;
-    box-shadow: 0 4px 12px rgb(14 165 233 / 0.15);
-    position: relative;
-    display: flex;
-    flex-direction: column;
-  }
-  .customer-name {
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .customer-info {
-    font-size: 0.95rem;
-    line-height: 1.3;
-    color: #475569;
+    color: #c7d2fe;
+    font-family: monospace, monospace;
+    font-size: 1rem;
+    white-space: pre-wrap;
+    overflow-y: auto;
   }
 
-  /* Card action buttons */
-  .card-actions {
-    margin-top: auto;
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+  /* Footer */
+  footer {
+    background: rgba(255 255 255 / 0.12);
+    backdrop-filter: blur(20px);
+    padding: 12px 24px;
+    color: #a5b4fc;
+    font-size: 0.875rem;
+    text-align: center;
+    border-top: 1px solid rgba(255 255 255 / 0.1);
   }
-  .card-actions button {
+
+  /* Hamburger */
+  .mobile-header {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 64px;
+    background: rgba(255 255 255 / 0.12);
+    backdrop-filter: blur(20px);
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    color: white;
+    z-index: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .mobile-header button {
     background: none;
     border: none;
+    color: #8686ff;
     cursor: pointer;
-    color: #0ea5e9;
-    padding: 6px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 32px;
   }
-  .card-actions button:hover,
-  .card-actions button:focus {
-    background-color: #bae6fd;
-    outline: none;
-  }
-  .material-icons.md-18 {
-    font-size: 20px;
-    vertical-align: middle;
-  }
-
-  /* Modal for Add/Edit */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgb(15 23 42 / 0.7);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 12px;
-    z-index: 1000;
-  }
-  .modal-overlay.show {
-    display: flex;
-  }
-  .modal {
-    background: white;
-    border-radius: 16px;
-    max-width: 480px;
-    width: 100%;
-    padding: 24px 32px;
-    box-shadow: 0 6px 24px rgb(0 0 0 / 0.15);
-    position: relative;
-  }
-  .modal h2 {
-    margin-top: 0;
-    font-weight: 700;
-    font-size: 1.6rem;
-    color: #0ea5e9;
-  }
-  .modal form {
-    margin-top: 24px;
-  }
-  .form-field {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-  }
-  .form-field label {
-    font-weight: 600;
-    margin-bottom: 6px;
-    font-size: 0.95rem;
-    color: #334155;
-  }
-  .form-field input {
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: 1px solid #cbd5e1;
-    font-size: 1rem;
-    outline-offset: 2px;
-  }
-  .form-field input:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px #bfdbfe;
-  }
-  .modal-footer {
-    margin-top: 32px;
-    text-align: right;
-  }
-  .modal-footer button {
-    padding: 12px 22px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.3s ease;
-    margin-left: 12px;
-  }
-  .btn-cancel {
-    background-color: #cbd5e1;
-    color: #475569;
-  }
-  .btn-cancel:hover,
-  .btn-cancel:focus {
-    background-color: #94a3b8;
-    color: #1e293b;
-  }
-  .btn-save {
-    background-color: #0ea5e9;
-    color: white;
-  }
-  .btn-save:hover,
-  .btn-save:focus {
-    background-color: #0284c7;
-  }
-
-  /* Accessibility */
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-    border: 0;
+  @media (max-width: 767px) {
+    .mobile-header {
+      display: flex;
+    }
+    header {
+      display: none;
+    }
+    .app-container {
+      padding-top: 64px;
+    }
   }
 </style>
 </head>
 <body>
-<header>
-  <h1>Zuu Caster - Customer Database</h1>
-  <div class="search-container" role="search">
-    <input id="searchInput" type="search" placeholder="Search customers..." aria-label="Search customers" />
-    <span class="material-icons search-icon" aria-hidden="true">search</span>
+  <div class="mobile-header" aria-label="Mobile Navigation">
+    <button id="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+      <span class="material-icons">menu</span>
+    </button>
+    <div style="margin-left: 16px; font-weight: 700; font-size: 1.25rem; color: #e0e7ff;">Antivirus</div>
   </div>
-  <button id="addCustomerBtn" aria-haspopup="dialog" aria-controls="customerModal" aria-expanded="false">Add Customer</button>
-</header>
-<main>
-  <section id="customerList" aria-live="polite" aria-relevant="additions removals">
-    <!-- Customer cards injected here -->
-  </section>
-</main>
-
-<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
-  <div class="modal" role="document">
-    <h2 id="modalTitle">Add Customer</h2>
-    <form id="customerForm" novalidate>
-      <input type="hidden" id="customerId" />
-      <div class="form-field">
-        <label for="customerName">Full Name<span aria-hidden="true">*</span></label>
-        <input type="text" id="customerName" name="customerName" required autocomplete="name" aria-required="true" />
-        <span class="sr-only" role="alert" id="errorName"></span>
-      </div>
-      <div class="form-field">
-        <label for="customerEmail">Email<span aria-hidden="true">*</span></label>
-        <input type="email" id="customerEmail" name="customerEmail" required autocomplete="email" aria-required="true" />
-        <span class="sr-only" role="alert" id="errorEmail"></span>
-      </div>
-      <div class="form-field">
-        <label for="customerPhone">Phone</label>
-        <input type="tel" id="customerPhone" name="customerPhone" autocomplete="tel" />
-      </div>
-      <div class="form-field">
-        <label for="customerCompany">Company</label>
-        <input type="text" id="customerCompany" name="customerCompany" autocomplete="organization" />
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
-        <button type="submit" class="btn-save" id="saveBtn">Save</button>
-      </div>
-    </form>
+  <header role="banner">
+    <div class="brand" aria-label="Antivirus Brand">
+      <span class="material-icons" aria-hidden="true">security</span>
+      <span>SecureGuard</span>
+    </div>
+  </header>
+  <div class="app-container">
+    <aside class="sidebar" role="navigation" aria-label="Sidebar navigation" tabindex="0">
+      <h2>Menu</h2>
+      <nav>
+        <ul>
+          <li class="active" tabindex="0" aria-current="page"><span class="material-icons">dashboard</span>Dashboard</li>
+          <li tabindex="0"><span class="material-icons">search</span>Scan Files <span class="badge" aria-label="New alert">New</span></li>
+          <li tabindex="0"><span class="material-icons">history</span>History</li>
+          <li tabindex="0"><span class="material-icons">settings</span>Settings</li>
+          <li tabindex="0"><span class="material-icons">help_outline</span>Help</li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="content" role="main">
+      <h1>Antivirus Scanner</h1>
+      <section class="scan-section" aria-label="File scan form">
+        <label for="file-input">Select file(s) to scan</label>
+        <input 
+          type="file" id="file-input" aria-describedby="file-desc" multiple 
+          accept="*/*" 
+          aria-required="true" 
+          />
+        <button id="scan-button" disabled aria-disabled="true" aria-live="polite" aria-atomic="true">
+          Start Scan
+          <span class="material-icons" aria-hidden="true" style="vertical-align: middle; margin-left: 8px;">play_arrow</span>
+        </button>
+        <div id="file-desc" style="color:#adb5bd; font-size: 0.875rem; margin-top: 4px;">
+          Upload files to check for malware signatures.
+        </div>
+        <div class="results" id="scan-results" role="region" aria-live="polite" aria-atomic="true">
+          No scan performed yet.
+        </div>
+      </section>
+    </main>
   </div>
-</div>
-
+  <footer role="contentinfo">
+    &copy; 2024 SecureGuard. All rights reserved. | <a href="#" style="color:#a5b4fc; text-decoration:none;" tabindex="0" aria-label="Privacy Policy link">Privacy Policy</a>
+  </footer>
 <script>
-  (() => {
-    'use strict';
+  // Elements References
+  const fileInput = document.getElementById('file-input');
+  const scanButton = document.getElementById('scan-button');
+  const scanResults = document.getElementById('scan-results');
+  const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+  const sidebar = document.querySelector('aside.sidebar');
+  const navItems = sidebar.querySelectorAll('nav ul li');
 
-    const customerListEl = document.getElementById('customerList');
-    const addBtn = document.getElementById('addCustomerBtn');
-    const modalOverlay = document.getElementById('modalOverlay');
-    const modalTitle = document.getElementById('modalTitle');
-    const customerForm = document.getElementById('customerForm');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const searchInput = document.getElementById('searchInput');
+  // Show/hide sidebar on mobile
+  mobileMenuToggle.addEventListener('click', () => {
+    const isShown = sidebar.classList.toggle('show');
+    mobileMenuToggle.setAttribute('aria-expanded', isShown ? 'true' : 'false');
+  });
 
-    let customers = [];
-    let editingCustomerId = null;
+  // Enable/disable scan button based on file input
+  fileInput.addEventListener('change', () => {
+    scanButton.disabled = !fileInput.files.length;
+    scanButton.setAttribute('aria-disabled', (!fileInput.files.length).toString());
+  });
 
-    // Utility: Save customers to localStorage
-    function saveCustomers() {
-      localStorage.setItem('zuuCasterCustomers', JSON.stringify(customers));
-    }
-    // Utility: Load customers from localStorage
-    function loadCustomers() {
-      const data = localStorage.getItem('zuuCasterCustomers');
-      customers = data ? JSON.parse(data) : [];
-    }
-    // Utility: Generate unique ID
-    function generateId() {
-      return 'c_' + Math.random().toString(36).substr(2, 9);
-    }
-    // Utility: Sanitize input text (simple)
-    function sanitize(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-    // Render customer cards based on filter
-    function renderCustomers(filter = '') {
-      const f = filter.trim().toLowerCase();
-      customerListEl.innerHTML = '';
-      const filteredCustomers = customers.filter(c => {
-        return (
-          c.name.toLowerCase().includes(f) ||
-          c.email.toLowerCase().includes(f) ||
-          c.phone?.toLowerCase().includes(f) ||
-          c.company?.toLowerCase().includes(f)
-        );
-      });
-      if (filteredCustomers.length === 0) {
-        customerListEl.innerHTML = '<p style="color:#64748b; text-align:center; font-style:italic;">No customers found.</p>';
-        return;
-      }
-      filteredCustomers.forEach(c => {
-        const card = document.createElement('article');
-        card.className = 'customer-card';
-        card.setAttribute('tabindex', '0');
-        card.setAttribute('aria-label', `Customer: ${c.name}, Email: ${c.email}, Phone: ${c.phone ?? 'not provided'}, Company: ${c.company ?? 'not provided'}`);
+  // Dummy malware signature database for demo
+  const malwareSignatures = [
+    'evil.exe',
+    'badfile.dll',
+    'trojan.bat',
+    'virus.txt',
+    'worm.scr',
+  ];
 
-        card.innerHTML = `
-          <h3 class="customer-name">${sanitize(c.name)}</h3>
-          <p class="customer-info"><strong>Email:</strong> <a href="mailto:${sanitize(c.email)}">${sanitize(c.email)}</a></p>
-          <p class="customer-info"><strong>Phone:</strong> ${c.phone ? sanitize(c.phone) : '<em>Not provided</em>'}</p>
-          <p class="customer-info"><strong>Company:</strong> ${c.company ? sanitize(c.company) : '<em>Not provided</em>'}</p>
-          <div class="card-actions">
-            <button class="edit-btn" aria-label="Edit customer ${sanitize(c.name)}" title="Edit"><span class="material-icons md-18">edit</span></button>
-            <button class="delete-btn" aria-label="Delete customer ${sanitize(c.name)}" title="Delete"><span class="material-icons md-18">delete</span></button>
-          </div>
-        `;
-        card.querySelector('.edit-btn').addEventListener('click', () => openModal(c.id));
-        card.querySelector('.delete-btn').addEventListener('click', () => deleteCustomer(c.id));
-        customerListEl.appendChild(card);
-      });
-    }
+  // Simulated scan function with delay and results
+  function scanFiles(files) {
+    scanResults.textContent = 'Scanning files... Please wait.';
+    scanButton.disabled = true;
+    scanButton.setAttribute('aria-disabled', 'true');
 
-    // Open modal for add or edit
-    function openModal(customerId = null) {
-      editingCustomerId = customerId;
-      clearFormErrors();
-      if (customerId) {
-        const cust = customers.find(c => c.id === customerId);
-        if (!cust) return;
-        modalTitle.textContent = 'Edit Customer';
-        customerForm.customerName.value = cust.name;
-        customerForm.customerEmail.value = cust.email;
-        customerForm.customerPhone.value = cust.phone || '';
-        customerForm.customerCompany.value = cust.company || '';
-        customerForm.customerId.value = cust.id;
-      } else {
-        modalTitle.textContent = 'Add Customer';
-        customerForm.reset();
-        customerForm.customerId.value = '';
-      }
-      modalOverlay.classList.add('show');
-      modalOverlay.focus();
-      addBtn.setAttribute('aria-expanded', 'true');
-      trapFocus(modalOverlay);
-    }
-
-    // Close modal
-    function closeModal() {
-      modalOverlay.classList.remove('show');
-      addBtn.setAttribute('aria-expanded', 'false');
-      editingCustomerId = null;
-      removeTrapFocus();
-      addBtn.focus();
-    }
-
-    // Delete customer with confirmation
-    function deleteCustomer(customerId) {
-      const cust = customers.find(c => c.id === customerId);
-      if (!cust) return;
-      const confirmed = confirm(`Are you sure you want to delete customer "${cust.name}"? This action cannot be undone.`);
-      if (confirmed) {
-        customers = customers.filter(c => c.id !== customerId);
-        saveCustomers();
-        renderCustomers(searchInput.value);
-      }
-    }
-
-    // Validate form fields
-    function validateForm() {
-      clearFormErrors();
-      let valid = true;
-      const name = customerForm.customerName.value.trim();
-      const email = customerForm.customerEmail.value.trim();
-
-      if (name.length < 2) {
-        showError('errorName', 'Please enter a valid name (at least 2 characters).');
-        valid = false;
-      }
-      if (!validateEmail(email)) {
-        showError('errorEmail', 'Please enter a valid email address.');
-        valid = false;
-      }
-      return valid;
-    }
-    function clearFormErrors() {
-      document.getElementById('errorName').textContent = '';
-      document.getElementById('errorEmail').textContent = '';
-    }
-    function showError(id, message) {
-      const el = document.getElementById(id);
-      if (el) el.textContent = message;
-    }
-    // Simple email format check
-    function validateEmail(email) {
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return re.test(email.toLowerCase());
-    }
-
-    // Save customer (add or update)
-    function saveCustomer(data) {
-      if (editingCustomerId) {
-        // Update
-        const index = customers.findIndex(c => c.id === editingCustomerId);
-        if (index !== -1) {
-          customers[index] = {...customers[index], ...data};
-        }
-      } else {
-        // Add new
-        customers.push({
-          id: generateId(),
-          ...data
-        });
-      }
-      saveCustomers();
-    }
-
-    // Form submit handler
-    customerForm.addEventListener('submit', e => {
-      e.preventDefault();
-      if (!validateForm()) return;
-
-      const customerData = {
-        name: customerForm.customerName.value.trim(),
-        email: customerForm.customerEmail.value.trim(),
-        phone: customerForm.customerPhone.value.trim() || undefined,
-        company: customerForm.customerCompany.value.trim() || undefined
-      };
-
-      saveCustomer(customerData);
-      renderCustomers(searchInput.value);
-      closeModal();
-    });
-
-    // Cancel button and modal overlay close
-    cancelBtn.addEventListener('click', closeModal);
-    modalOverlay.addEventListener('click', e => {
-      if (e.target === modalOverlay) closeModal();
-    });
-    // Close modal on Esc key
-    window.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && modalOverlay.classList.contains('show')) {
-        closeModal();
-      }
-    });
-
-    // Open modal on add button
-    addBtn.addEventListener('click', () => openModal());
-
-    // Search input filter
-    searchInput.addEventListener('input', () => renderCustomers(searchInput.value));
-
-    // Focus trap for modal
-    let lastFocusedElement = null;
-    function trapFocus(element) {
-      lastFocusedElement = document.activeElement;
-      const focusableElements = element.querySelectorAll('a[href], area[href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]');
-      if (focusableElements.length === 0) return;
-      const first = focusableElements[0];
-      const last = focusableElements[focusableElements.length -1];
-      element.addEventListener('keydown', trapHandler);
-      function trapHandler(e) {
-        if (e.key === 'Tab') {
-          if (e.shiftKey) {
-            if (document.activeElement === first) {
-              e.preventDefault();
-              last.focus();
-            }
-          } else {
-            if (document.activeElement === last) {
-              e.preventDefault();
-              first.focus();
-            }
+    return new Promise(resolve => {
+      setTimeout(() => {
+        const infectedFiles = [];
+        for (const file of files) {
+          if (malwareSignatures.includes(file.name.toLowerCase())) {
+            infectedFiles.push(file.name);
           }
         }
-      }
-      first.focus();
-      element._trapHandler = trapHandler;
-    }
-    function removeTrapFocus() {
-      if (modalOverlay._trapHandler) {
-        modalOverlay.removeEventListener('keydown', modalOverlay._trapHandler);
-        modalOverlay._trapHandler = null;
-      }
-      if (lastFocusedElement) lastFocusedElement.focus();
-    }
+        resolve(infectedFiles);
+      }, 1800);
+    });
+  }
 
-    // Initialization
-    function init() {
-      loadCustomers();
-      renderCustomers();
+  // Display scan results
+  function displayResults(infectedFiles) {
+    if (infectedFiles.length === 0) {
+      scanResults.innerHTML = '<strong>No malware found.</strong> Your files are clean.';
+    } else {
+      const listItems = infectedFiles.map(f => `<li>${f}</li>`).join('');
+      scanResults.innerHTML = `<strong>Malware detected in the following files:</strong><ul>${listItems}</ul>
+        <p>Files have been quarantined successfully.</p>`;
     }
+  }
 
-    // Run app
-    init();
-  })();
+  // Scan button click handler
+  scanButton.addEventListener('click', async () => {
+    if(fileInput.files.length === 0) return;
+    try {
+      scanResults.textContent = '';
+      const infectedFiles = await scanFiles(fileInput.files);
+      displayResults(infectedFiles);
+    } catch (e) {
+      scanResults.textContent = 'An error occurred during scanning. Please try again.';
+    } finally {
+      scanButton.disabled = false;
+      scanButton.setAttribute('aria-disabled', 'false');
+    }
+  });
+
+  // Keyboard accessibility for nav items
+  navItems.forEach((item) => {
+    item.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        navItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+      }
+    });
+    item.addEventListener('click', () => {
+      navItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
 </script>
 </body>
 </html>
