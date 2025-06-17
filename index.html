@@ -1,495 +1,902 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Zuu &amp; Caster</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Premium IMEI Checker App</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    rel="stylesheet"
+  />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
-    /* CSS Reset */
+    /* Reset and base */
     *, *::before, *::after {
       box-sizing: border-box;
     }
-
     body {
       margin: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-        Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      /* Black and red gradient background */
-      background: linear-gradient(135deg, #0a0a0a, #7f0a0a);
-      color: #f9fafb; /* off white for text */
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.5;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      -webkit-font-feature-settings: "liga" 1, "calt" 1;
-      position: relative;
     }
 
-    a {
-      color: #e63946;
-      text-decoration: none;
-      transition: color 0.3s ease;
+    :root {
+      --color-primary: #6366f1; /* Indigo 500 */
+      --color-primary-light: #818cf8;
+      --color-primary-dark: #4f46e5;
+      --color-bg-light: #f9fafb;
+      --color-bg-dark: #121212;
+      --bg: var(--color-bg-light);
+      --surface: rgba(255 255 255 / 0.6);
+      --surface-glass: rgba(255 255 255 / 0.15);
+      --surface-glass-hover: rgba(255 255 255 / 0.25);
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --text-inverse: #eee;
+      --shadow-elevation: 0 8px 24px rgba(0 0 0 / 0.1);
+      --scrollbar-bg: #d4d4d8;
+      --scrollbar-thumb: var(--color-primary);
+      --focus-color: var(--color-primary);
+      --error-color: #ef4444;
     }
-    a:hover,
-    a:focus {
-      color: #b32a33;
-      outline: none;
+    [data-theme="dark"] {
+      --bg: var(--color-bg-dark);
+      --surface: rgba(30 30 30 / 0.6);
+      --surface-glass: rgba(30 30 30 / 0.45);
+      --surface-glass-hover: rgba(30 30 30 / 0.65);
+      --text-primary: #e0e7ff;
+      --text-secondary: #9ca3af;
+      --text-inverse: #121212;
+      --shadow-elevation: 0 8px 24px rgba(0 0 0 / 0.7);
+      --scrollbar-bg: #3f3f46;
+      --scrollbar-thumb: var(--color-primary-light);
+      --focus-color: var(--color-primary-light);
+      --error-color: #f87171;
     }
 
-    /* Sticky Header */
-    header {
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+      background: var(--scrollbar-bg);
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: var(--scrollbar-thumb);
+      border-radius: 8px;
+      border: 2px solid var(--scrollbar-bg);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: var(--color-primary-dark);
+    }
+
+    /* Container grid layout: header (64px), footer(auto), sidebar(280px) and main */
+    .app {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      grid-template-rows: 64px 1fr auto;
+      grid-template-areas:
+        "header header"
+        "sidebar main"
+        "footer footer";
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    @media (max-width: 1023px) {
+      .app {
+        grid-template-columns: 280px 1fr;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 64px 1fr 56px;
+        grid-template-areas:
+          "header"
+          "main"
+          "footer";
+      }
+    }
+
+    /* Header */
+    header.app-header {
+      grid-area: header;
       position: sticky;
       top: 0;
-      background-color: rgba(30,30,30,0.85);
-      backdrop-filter: saturate(180%) blur(8px);
-      border-bottom: 1px solid rgba(230, 57, 70, 0.4);
+      height: 64px;
+      background: var(--surface-glass);
+      backdrop-filter: saturate(180%) blur(20px);
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 1.5rem 3rem;
-      box-shadow: 0 2px 6px rgba(230, 57, 70, 0.3);
-      z-index: 1000;
-      user-select: none;
-    }
-    .logo {
-      font-weight: 700;
-      font-size: 1.5rem;
-      color: #e63946;
-      letter-spacing: -0.015em;
-      user-select: text;
-    }
-    nav a {
-      font-weight: 600;
-      font-size: 1rem;
-      margin-left: 2.25rem;
-      user-select: none;
-      color: #f9fafb;
+      padding: 0 24px;
+      justify-content: space-between;
+      box-shadow: var(--shadow-elevation);
+      z-index: 100;
     }
 
-    /* Container max width */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 2rem;
-      flex-grow: 1;
+    header.app-header .brand {
+      font-weight: 900;
+      font-size: clamp(1.25rem, 2vw, 1.5rem);
+      color: var(--color-primary);
+      user-select: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    header.app-header nav {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      gap: 24px;
     }
 
-    /* Hero Section */
-    .hero {
-      padding: 6rem 0 5rem 0;
-      text-align: center;
-      user-select: none;
-    }
-    .hero h1 {
-      font-size: 3.5rem;
-      font-weight: 700;
-      color: #e63946;
-      margin: 0 0 1rem 0;
-      line-height: 1.1;
-      text-shadow: 0 0 6px rgba(230, 57, 70, 0.7);
-    }
-    .hero p {
-      font-size: 1.25rem;
-      color: #d1d5db;
-      max-width: 600px;
-      margin: 0 auto 3rem auto;
-      user-select: text;
-    }
-    .btn-primary {
-      background-color: #111111;
-      color: white;
-      font-weight: 700;
-      font-size: 1.125rem;
-      padding: 0.75rem 2.25rem;
+    header.app-header button.theme-toggle {
+      background: none;
       border: none;
-      border-radius: 0.75rem;
       cursor: pointer;
-      box-shadow: 0 8px 15px rgba(230, 57, 70, 0.6);
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
-      user-select: none;
-      text-decoration: none;
-      display: inline-block;
-      text-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
-    }
-    .btn-primary:hover,
-    .btn-primary:focus {
-      background-color: #2c2c2c;
-      box-shadow: 0 12px 20px rgba(230, 57, 70, 0.85);
-      outline: none;
+      color: var(--color-primary);
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      transition: color 0.3s ease;
     }
 
-    /* Services Section */
-    .services {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 2.75rem;
-      padding-bottom: 6rem;
+    header.app-header button.theme-toggle:focus-visible {
+      outline-offset: 2px;
+      outline: 3px solid var(--focus-color);
+      border-radius: 4px;
     }
 
-    .card {
-      background: #1e1e1e;
-      border-radius: 0.75rem;
-      box-shadow: 0 8px 24px rgba(230,57,70,0.3);
-      padding: 2.5rem 2rem 3rem 2rem;
+    /* Sidebar */
+    aside.app-sidebar {
+      grid-area: sidebar;
+      background: var(--surface-glass);
+      backdrop-filter: saturate(180%) blur(20px);
+      box-shadow: var(--shadow-elevation);
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      padding: 24px 0;
       user-select: none;
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
-      color: #f9fafb;
+      transition: transform 0.3s ease;
+      z-index: 90;
     }
-    .card:hover,
-    .card:focus-within {
-      box-shadow: 0 14px 40px rgba(230, 57, 70, 0.6);
-      transform: translateY(-6px);
+
+    /* Collapsed sidebar for mobile */
+    aside.app-sidebar.collapsed {
+      transform: translateX(-100%);
+      position: fixed;
+      top: 64px;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      padding-top: 48px;
+      box-shadow: 2px 0 12px rgba(0 0 0 / 0.3);
+      background: var(--surface-glass);
+    }
+
+    @media (max-width: 767px) {
+      aside.app-sidebar {
+        position: fixed;
+        top: 64px;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        padding-top: 48px;
+        box-shadow: 2px 0 12px rgba(0 0 0 / 0.4);
+        background: var(--surface-glass);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      aside.app-sidebar.open {
+        transform: translateX(0);
+      }
+    }
+
+    aside nav {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 0 24px;
+      margin-top: 12px;
+    }
+
+    aside nav a {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-decoration: none;
+      border-radius: 12px;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    aside nav a:hover,
+    aside nav a:focus-visible {
+      background: var(--surface-glass-hover);
       outline: none;
     }
-    .card h2 {
-      font-weight: 700;
-      font-size: 2.5rem;
-      color: #e63946;
-      margin: 0;
-      user-select: text;
-      text-shadow: 0 0 8px rgba(230, 57, 70, 0.8);
+
+    aside nav a.active {
+      background: var(--color-primary);
+      color: white;
+      box-shadow: 0 0 8px var(--color-primary);
     }
-    .services-list {
-      list-style: none;
-      padding-left: 0;
-      margin: 0;
-      color: #d1d5db;
-      font-weight: 600;
-      font-size: 1.125rem;
-      line-height: 1.5;
-      user-select: text;
+
+    aside nav a .material-icons {
+      font-size: 24px;
+      user-select: none;
     }
-    .services-list li {
-      padding: 0.25rem 0;
-      border-bottom: 1px solid rgba(230,57,70,0.2);
-      transition: color 0.25s ease;
-      cursor: default;
-      user-select: text;
+
+    /* Sidebar toggle button on mobile */
+    button.sidebar-toggle {
+      background: none;
+      border: none;
+      color: var(--color-primary);
+      font-size: 28px;
+      cursor: pointer;
+      display: none;
+      padding: 8px;
+      margin-right: 8px;
+      user-select: none;
+      transition: color 0.3s ease;
     }
-    .services-list li:last-child {
-      border-bottom: none;
+    button.sidebar-toggle:focus-visible {
+      outline-offset: 2px;
+      outline: 3px solid var(--focus-color);
+      border-radius: 4px;
     }
-    .services-list li:hover {
-      color: #b32a33;
+    @media (max-width: 767px) {
+      button.sidebar-toggle {
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    /* Main content */
+    main.app-main {
+      grid-area: main;
+      padding: 32px 40px;
+      overflow-y: auto;
+      min-height: calc(100vh - 64px);
+      background: var(--bg);
+      scroll-behavior: smooth;
+    }
+
+    @media (max-width: 480px) {
+      main.app-main {
+        padding: 20px 16px;
+      }
     }
 
     /* Footer */
-    footer {
-      padding: 3rem 2rem;
-      text-align: center;
-      color: rgba(230, 57, 70, 0.8);
-      font-weight: 400;
-      font-size: 0.9rem;
+    footer.app-footer {
+      grid-area: footer;
+      background: var(--surface-glass);
+      backdrop-filter: saturate(180%) blur(20px);
+      padding: 12px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: var(--text-secondary);
       user-select: none;
-      background-color: transparent;
-      border-top: 1px solid rgba(230, 57, 70, 0.4);
-      margin-top: auto;
+      box-shadow: inset 0 1px 0 rgba(255 255 255 / 0.2);
     }
 
-    /* Floating WhatsApp Contact Button */
-    .whatsapp-float {
-      position: fixed;
-      right: 2rem;
-      bottom: 2.5rem;
-      background-color: #25D366;
+    @media (max-width: 767px) {
+      footer.app-footer {
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 12px 16px;
+        font-size: 13px;
+      }
+    }
+
+    /* Form and input styling */
+    form {
+      max-width: 480px;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    label {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    input[type="text"] {
+      padding: 12px 14px;
+      font-size: clamp(1rem, 2vw, 1.125rem);
+      border-radius: 12px;
+      border: 2px solid #cbd5e1;
+      transition: border-color 0.3s ease;
+      background: var(--surface);
+      color: var(--text-primary);
+      outline-offset: 2px;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--focus-color);
+      outline: none;
+      background: var(--surface-glass-hover);
+    }
+
+    input[type="text"].invalid {
+      border-color: var(--error-color);
+      background: rgba(239,68,68,0.1);
+    }
+
+    .field-error {
+      color: var(--error-color);
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-top: -14px;
+      margin-bottom: 8px;
+      user-select: none;
+    }
+
+    button[type="submit"] {
+      background: var(--color-primary);
       color: white;
       font-weight: 700;
-      font-family: 'Inter', sans-serif;
-      font-size: 1.1rem;
-      border-radius: 9999px;
-      padding: 0.75rem 1.5rem 0.75rem 0.75rem;
-      box-shadow:
-        0 0 8px #25D366,
-        0 0 16px #25D366,
-        0 0 24px #25D366,
-        0 0 32px #25D366;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
+      padding: 14px;
+      border: none;
+      border-radius: 16px;
+      font-size: clamp(1.1rem, 2vw, 1.25rem);
       cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
       user-select: none;
-      text-decoration: none;
-      z-index: 10000;
-      animation: rgbBlink 3s infinite;
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
+      box-shadow: 0 6px 16px rgba(99,102,241,0.4);
     }
-    .whatsapp-float:hover,
-    .whatsapp-float:focus-visible {
-      box-shadow:
-        0 0 12px #25D366,
-        0 0 28px #e63946,
-        0 0 36px #1db954,
-        0 0 48px #00aabb;
-      transform: scale(1.05);
-      outline: none;
+    button[type="submit"]:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(63,63,255,0.6);
     }
-    .whatsapp-icon {
-      width: 22px;
-      height: 22px;
-      fill: white;
-      flex-shrink: 0;
+    button[type="submit"]:focus-visible {
+      outline-offset: 2px;
+      outline: 3px solid var(--focus-color);
     }
-    /* RGB blinking animation */
-    @keyframes rgbBlink {
-      0%, 100% {
-        box-shadow:
-          0 0 6px #25D366,
-          0 0 14px #25D366,
-          0 0 22px #25D366;
+    button[type="submit"]:disabled {
+      background: #a5b4fc;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* Result card */
+    section.result-card {
+      margin-top: 32px;
+      background: var(--surface-glass);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-radius: 24px;
+      padding: 24px 32px;
+      box-shadow: var(--shadow-elevation);
+      user-select: text;
+      transition: all 0.3s ease;
+    }
+
+    section.result-card:hover {
+      box-shadow: 0 16px 48px rgba(99 102 241 / 0.4);
+    }
+
+    section.result-card h2 {
+      margin-top: 0;
+      font-weight: 900;
+      color: var(--color-primary);
+      font-size: clamp(1.5rem, 2vw, 2rem);
+      user-select: text;
+    }
+
+    section.result-card dl {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 12px 32px;
+      margin-top: 1rem;
+    }
+    section.result-card dt {
+      font-weight: 700;
+      color: var(--text-secondary);
+      user-select: text;
+    }
+    section.result-card dd {
+      margin: 0;
+      color: var(--text-primary);
+      user-select: text;
+      word-break: break-word;
+    }
+
+    /* Loading skeleton */
+    .loading-skeleton {
+      max-width: 480px;
+      margin-top: 24px;
+      border-radius: 20px;
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--surface-glass),
+        var(--surface-glass) 10px,
+        var(--surface-glass-hover) 10px,
+        var(--surface-glass-hover) 20px
+      );
+      animation: shimmer 1.5s linear infinite;
+      height: 160px;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 100% 0;
       }
-      33% {
-        box-shadow:
-          0 0 8px #e63946,
-          0 0 20px #e63946,
-          0 0 30px #e63946;
-      }
-      66% {
-        box-shadow:
-          0 0 10px #00aabb,
-          0 0 24px #00aabb,
-          0 0 38px #00aabb;
+      100% {
+        background-position: -100% 0;
       }
     }
 
-    /* Responsive */
-    @media (max-width: 480px) {
-      header {
-        padding: 1rem 1.5rem;
+    /* Toast Notification */
+    #toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 110;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 320px;
+      user-select: none;
+    }
+
+    .toast {
+      background: var(--surface-glass);
+      backdrop-filter: saturate(180%) blur(20px);
+      color: var(--text-primary);
+      padding: 14px 20px;
+      border-radius: 14px;
+      box-shadow: var(--shadow-elevation);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slide-in 0.3s ease forwards;
+      cursor: pointer;
+    }
+    .toast.success {
+      border-left: 4px solid #22c55e;
+    }
+    .toast.error {
+      border-left: 4px solid var(--error-color);
+      color: var(--error-color);
+    }
+    .toast .material-icons {
+      font-size: 24px;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    .toast-message {
+      flex: 1;
+      font-weight: 600;
+      user-select: none;
+    }
+    @keyframes slide-in {
+      from {
+        transform: translateX(120%);
+        opacity: 0;
       }
-      nav a {
-        margin-left: 1.25rem;
-        font-size: 0.875rem;
-      }
-      .hero h1 {
-        font-size: 2.5rem;
-      }
-      .hero p {
-        font-size: 1rem;
-        max-width: 90vw;
-      }
-      .btn-primary {
-        font-size: 1rem;
-        padding: 0.6rem 1.5rem;
-      }
-      .services {
-        gap: 1.5rem;
-        grid-template-columns: 1fr;
-      }
-      .card h2 {
-        font-size: 2rem;
-      }
-      .services-list {
-        font-size: 1rem;
-      }
-      .whatsapp-float {
-        font-size: 1rem;
-        padding: 0.6rem 1.2rem 0.6rem 0.6rem;
-      }
-      .whatsapp-icon {
-        width: 18px;
-        height: 18px;
+      to {
+        transform: translateX(0);
+        opacity: 1;
       }
     }
+
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">Unlock &amp; Repair</div>
-    <nav aria-label="Primary navigation">
-      <a href="#services">Services</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </header>
+  <div class="app" role="application" aria-label="IMEI Phone Checker Application">
+    <header class="app-header" role="banner">
+      <button
+        class="sidebar-toggle material-icons"
+        aria-label="Toggle sidebar navigation"
+        aria-expanded="false"
+        aria-controls="sidebar"
+        title="Toggle Menu"
+        tabindex="0"
+      >menu</button>
+      <div class="brand" aria-label="Application brand">IMEI CHECKER</div>
+      <nav role="navigation" aria-label="User controls">
+        <button
+          class="theme-toggle material-icons"
+          aria-label="Toggle light and dark theme"
+          title="Toggle Theme"
+        >dark_mode</button>
+      </nav>
+    </header>
 
-  <main class="container">
-    <section class="hero" role="banner" aria-label="Hero section">
-      <h1>Secure Phone &amp; Computer Unlock Services With Zuu Caster</h1>
-      <p>Unlock passwords, screen locks, Apple ID, and more for Samsung, iPhone, Honor devices &amp; provide computer repair and custom builds.</p>
-      <a href="https://wa.me/60178040403" target="_blank" rel="noopener" class="btn-primary" aria-label="Contact us on WhatsApp +60178040403">
-        Contact Us
-      </a>
-    </section>
+    <aside class="app-sidebar collapsed" id="sidebar" role="complementary" aria-label="Primary navigation sidebar">
+      <nav>
+        <a href="#" class="active" tabindex="0" aria-current="page">
+          <span class="material-icons" aria-hidden="true">smartphone</span>
+          IMEI Check
+        </a>
+        <!-- Placeholder for future nav items -->
+        <!-- 
+        <a href="#" tabindex="-1" aria-disabled="true">
+          <span class="material-icons" aria-hidden="true">settings</span>
+          Settings
+        </a>
+        -->
+      </nav>
+    </aside>
 
-    <section id="services" class="services" aria-label="Our services">
-      <article class="card" tabindex="0" aria-labelledby="phone-unlock-title">
-        <h2 id="phone-unlock-title">Phone Unlock Services</h2>
-        <ul class="services-list">
-          <li>Samsung Google lock</li>
-          <li>Google Lock</li>
-          <li>Telco Unlock</li>
-          <li>Phone Brick</li>
-          <li>iPhone ID Lock</li>
-          <li>iPhone Telco Lock</li>
-          <li>Honor Google Lock / FRP</li>
-        </ul>
-      </article>
+    <main class="app-main" tabindex="0" role="main" aria-live="polite" aria-relevant="additions">
+      <h1>Check Your Phone IMEI</h1>
+      <p>Enter your IMEI number below to decode and get detailed device information.</p>
 
-      <article class="card" tabindex="0" aria-labelledby="additional-services-title">
-        <h2 id="additional-services-title">Additional Phone Services</h2>
-        <ul class="services-list">
-          <li>Website Design</li>
-          <li>FRP Bypass &amp; Password Reset</li>
-          <li>Forget Apple ID</li>
-          <li>iPad Bypass</li>
-          <li>Upgrade Storage</li>
-          <li>Screen Replacement</li>
-          <li>Glass Replacement</li>
-        </ul>
-      </article>
+      <form id="imeiForm" novalidate autocomplete="off" aria-describedby="errmsg" aria-live="assertive">
+        <label for="imeiInput">IMEI Number</label>
+        <input
+          type="text"
+          id="imeiInput"
+          name="imei"
+          inputmode="numeric"
+          pattern="[0-9]{15}"
+          maxlength="15"
+          placeholder="Enter 15-digit IMEI"
+          aria-required="true"
+          aria-invalid="false"
+          aria-describedby="imeiHelp errmsg"
+          autocomplete="off"
+          spellcheck="false"
+          autofocus
+        />
+        <div id="imeiHelp" style="font-size: 0.85rem; color: var(--text-secondary); margin-top:-12px; margin-bottom: 14px; user-select:none;">
+          The IMEI is a 15-digit number unique to your mobile device.
+        </div>
+        <div id="errmsg" role="alert" class="field-error" aria-live="assertive" aria-atomic="true"></div>
+        <button type="submit" id="submitBtn" disabled>Decode IMEI</button>
+      </form>
 
-      <article class="card" tabindex="0" aria-labelledby="computer-services-title">
-        <h2 id="computer-services-title">Computer Services</h2>
-        <ul class="services-list">
-          <li>Built Custom Computer</li>
-          <li>Laptop Service</li>
-        </ul>
-      </article>
-    </section>
-  </main>
+      <div id="loadingIndicator" class="loading-skeleton" aria-hidden="true"></div>
 
-  <!-- Floating WhatsApp Contact Button -->
-  <a href="https://wa.me/60178040403" target="_blank" rel="noopener" class="whatsapp-float" aria-label="Contact via WhatsApp +60178040403">
-    <svg class="whatsapp-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" fill="white">
-      <path d="M20.52 3.48A11.89 11.89 0 0012 0C5.373 0 0 5.373 0 12a11.97 11.97 0 001.671 6.027L0 24l6.076-1.647A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12a11.86 11.86 0 00-3.48-8.52zm-8.043 16.257a9.923 9.923 0 01-5.054-1.453l-.363-.215-3.607.979.963-3.522-.236-.377a9.97 9.97 0 0115.596-12.6 9.856 9.856 0 01-7.299 16.237zm5.178-6.407c-.286-.143-1.686-.833-1.946-.928-.26-.094-.448-.143-.637.143-.187.286-.726.928-.89 1.118-.163.187-.326.21-.612.07a8.064 8.064 0 01-2.378-1.468 9.06 9.06 0 01-1.677-2.085c-.175-.304-.018-.468.13-.61.134-.134.3-.35.452-.525a1.962 1.962 0 00.3-.5c.1-.163.05-.305-.025-.448-.075-.143-.637-1.54-.873-2.108-.23-.556-.463-.48-.637-.489l-.544-.01a.93.93 0 00-.675.31c-.23.236-.874.855-.874 2.082 0 1.227.896 2.415 1.02 2.582.125.163 1.764 2.727 4.276 3.82a14.54 14.54 0 001.92.81c.807.33 1.436.281 1.976.17.602-.134 1.85-.755 2.111-1.485.263-.73.263-1.355.188-1.485-.075-.13-.285-.195-.6-.338z"/>
-    </svg>
-    WhatsApp +60178040403
-  </a>
+      <section id="resultSection" class="result-card" aria-live="polite" aria-atomic="true" hidden>
+        <h2>Device Information</h2>
+        <dl id="resultDetails"></dl>
+        <img id="deviceImage" src="" alt="" style="margin-top:16px; width:320px; max-width:100%; border-radius: 16px; box-shadow: var(--shadow-elevation); user-select:none;" loading="lazy" onerror="this.style.display='none'" />
+      </section>
+    </main>
+
+    <footer class="app-footer" role="contentinfo">
+      <div>© 2024 IMEI Checker Inc.</div>
+      <div>Contact: support@imeichecker.com</div>
+    </footer>
+  </div>
+
+  <div id="toast-container" role="region" aria-live="polite" aria-atomic="false" aria-relevant="additions"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      // DOM references
+      const sidebar = document.querySelector('.app-sidebar');
+      const sidebarToggleBtn = document.querySelector('button.sidebar-toggle');
+      const themeToggleBtn = document.querySelector('button.theme-toggle');
+      const body = document.body;
+      const imeiInput = document.getElementById('imeiInput');
+      const form = document.getElementById('imeiForm');
+      const submitBtn = document.getElementById('submitBtn');
+      const errmsgDiv = document.getElementById('errmsg');
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      const resultSection = document.getElementById('resultSection');
+      const resultDetails = document.getElementById('resultDetails');
+      const deviceImage = document.getElementById('deviceImage');
+      const toastContainer = document.getElementById('toast-container');
+
+      // Sidebar toggle for mobile
+      function toggleSidebar() {
+        const isOpen = sidebar.classList.contains('open');
+        if (isOpen) {
+          sidebar.classList.remove('open');
+          sidebarToggleBtn.setAttribute('aria-expanded', 'false');
+        } else {
+          sidebar.classList.add('open');
+          sidebarToggleBtn.setAttribute('aria-expanded', 'true');
+          // trap focus inside sidebar if open (optional enhancement)
+        }
+      }
+      sidebarToggleBtn.addEventListener('click', toggleSidebar);
+
+      // Close sidebar if clicking outside on mobile
+      document.addEventListener('click', e => {
+        if (window.innerWidth <= 767 && sidebar.classList.contains('open')) {
+          if (!sidebar.contains(e.target) && e.target !== sidebarToggleBtn) {
+            sidebar.classList.remove('open');
+            sidebarToggleBtn.setAttribute('aria-expanded', 'false');
+          }
+        }
+      });
+
+      // Theme management
+      const THEME_KEY = 'imei-checker-theme';
+
+      function getPreferredTheme() {
+        const saved = localStorage.getItem(THEME_KEY);
+        if (saved === 'dark' || saved === 'light') return saved;
+        // Use system preference if no saved
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+
+      function applyTheme(theme) {
+        if (theme === 'dark') {
+          body.setAttribute('data-theme', 'dark');
+          themeToggleBtn.textContent = 'light_mode';
+        } else {
+          body.setAttribute('data-theme', 'light');
+          themeToggleBtn.textContent = 'dark_mode';
+        }
+      }
+
+      themeToggleBtn.addEventListener('click', () => {
+        const current = body.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        localStorage.setItem(THEME_KEY, next);
+        showToast(`Switched to ${next} mode`, 'success');
+      });
+
+      // Initialize theme on load
+      applyTheme(getPreferredTheme());
+
+      // Validation and form handling
+
+      function validateIMEI(value) {
+        // Basic IMEI: 15 digits, Luhn check optional
+        if (!value) return { valid: false, message: 'IMEI cannot be empty.' };
+        const cleaned = value.replace(/\D/g, '');
+        if (cleaned.length !== 15)
+          return { valid: false, message: 'IMEI must be exactly 15 digits.' };
+        if (!/^\d{15}$/.test(cleaned))
+          return { valid: false, message: 'IMEI must contain only numbers.' };
+        if (!luhnCheck(cleaned))
+          return { valid: false, message: 'IMEI checksum is invalid.' };
+        return { valid: true, value: cleaned };
+      }
+
+      // Luhn check for IMEI validation
+      // Reference: https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity
+      function luhnCheck(imei) {
+        let sum = 0;
+        for (let i = 0; i < 15; i++) {
+          let d = parseInt(imei.charAt(i), 10);
+          if (i % 2 === 1) {
+            d *= 2;
+            if (d > 9) d -= 9;
+          }
+          sum += d;
+        }
+        return sum % 10 === 0;
+      }
+
+      imeiInput.addEventListener('input', e => {
+        const val = e.target.value;
+        const res = validateIMEI(val);
+        if (res.valid) {
+          imeiInput.classList.remove('invalid');
+          errmsgDiv.textContent = '';
+          submitBtn.disabled = false;
+        } else {
+          imeiInput.classList.add('invalid');
+          errmsgDiv.textContent = res.message;
+          submitBtn.disabled = true;
+        }
+      });
+
+      // Dummy IMEI device data for demonstration (in reality, you'd call a backend or API)
+      const imeiDeviceData = {
+        // Key: IMEI prefix (first 8 digits)
+        '35779206': {
+          brand: 'Samsung',
+          model: 'Galaxy S21 Ultra',
+          manufacturer: 'Samsung Electronics',
+          type: 'Smartphone',
+          releaseYear: 2021,
+          hardware: 'Exynos 2100',
+          os: 'Android 11',
+          country: 'South Korea',
+          image: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b7b702fb-a279-45bf-85e3-d700d0431a50.png',
+          warranty: 'Valid until 2025-05-10',
+          notes: '5G enabled, 12GB RAM, 128GB Storage',
+        },
+        '35391807': {
+          brand: 'Samsung',
+          model: 'Galaxy Note 20',
+          manufacturer: 'Samsung Electronics',
+          type: 'Smartphone',
+          releaseYear: 2020,
+          hardware: 'Snapdragon 865+',
+          os: 'Android 10',
+          country: 'South Korea',
+          image: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/bb35c00f-988f-4f6a-8e65-ccdcd8eaa6c0.png',
+          warranty: 'Expired since 2023-11-11',
+          notes: 'S-Pen Support, 8GB RAM, 256GB Storage',
+        },
+        '35955506': {
+          brand: 'Apple',
+          model: 'iPhone 13 Pro',
+          manufacturer: 'Apple Inc.',
+          type: 'Smartphone',
+          releaseYear: 2021,
+          hardware: 'A15 Bionic',
+          os: 'iOS 15',
+          country: 'USA',
+          image: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b1a71f10-1972-4a46-ae09-899d82005d1e.png',
+          warranty: 'Valid until 2024-09-05',
+          notes: 'LiDAR scanner, Triple camera, 6GB RAM',
+        },
+        '35504608': {
+          brand: 'OnePlus',
+          model: 'OnePlus 8T',
+          manufacturer: 'OnePlus',
+          type: 'Smartphone',
+          releaseYear: 2020,
+          hardware: 'Snapdragon 865',
+          os: 'Android 11',
+          country: 'China',
+          image: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/10d11830-8077-46e0-b634-cea2f7e3971b.png',
+          warranty: 'Expired',
+          notes: '120Hz AMOLED display, 12GB RAM',
+        }
+      };
+
+      // Lookup device info by IMEI prefix
+      function decodeIMEI(imei) {
+        // Prefix is first 8 digits of IMEI (TAC) that identifies device model
+        const prefix = imei.slice(0, 8);
+        if (imeiDeviceData[prefix]) {
+          return { found: true, data: imeiDeviceData[prefix] };
+        }
+        return { found: false, data: null };
+      }
+
+      // Show toast notifications
+      function showToast(message, type = 'success', duration = 4000) {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.role = 'alert';
+        toast.tabIndex = -1;
+        toast.innerHTML = `
+          <span class="material-icons" aria-hidden="true">${
+            type === 'success' ? 'check_circle' : 'error'
+          }</span>
+          <div class="toast-message">${message}</div>
+        `;
+        toastContainer.appendChild(toast);
+        setTimeout(() => {
+          toast.classList.add('hide');
+          toast.addEventListener('transitionend', () => toast.remove());
+        }, duration);
+        // Dismiss on click
+        toast.addEventListener('click', () => {
+          toast.remove();
+        });
+      }
+
+      // Render decoded result to DOM
+      function renderResult(deviceData, imei) {
+        resultDetails.innerHTML = `
+          <dt>IMEI</dt><dd>${imei}</dd>
+          <dt>Brand</dt><dd>${deviceData.brand}</dd>
+          <dt>Model</dt><dd>${deviceData.model}</dd>
+          <dt>Manufacturer</dt><dd>${deviceData.manufacturer}</dd>
+          <dt>Device Type</dt><dd>${deviceData.type}</dd>
+          <dt>Release Year</dt><dd>${deviceData.releaseYear}</dd>
+          <dt>Hardware</dt><dd>${deviceData.hardware}</dd>
+          <dt>Operating System</dt><dd>${deviceData.os}</dd>
+          <dt>Manufacture Country</dt><dd>${deviceData.country}</dd>
+          <dt>Warranty Status</dt><dd>${deviceData.warranty}</dd>
+          <dt>Notes</dt><dd>${deviceData.notes}</dd>
+        `;
+        deviceImage.src = deviceData.image;
+        deviceImage.alt = `Image of ${deviceData.brand} ${deviceData.model}`;
+        resultSection.hidden = false;
+      }
+
+      // Clear previous result and errors
+      function clearResult() {
+        resultDetails.innerHTML = '';
+        deviceImage.src = '';
+        deviceImage.alt = '';
+        resultSection.hidden = true;
+        errmsgDiv.textContent = '';
+      }
+
+      function showLoading(show = true) {
+        loadingIndicator.setAttribute('aria-hidden', !show);
+        loadingIndicator.style.display = show ? 'block' : 'none';
+      }
+
+      // Handle form submission
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        clearResult();
+
+        const rawInput = imeiInput.value.trim();
+        const validation = validateIMEI(rawInput);
+        if (!validation.valid) {
+          errmsgDiv.textContent = validation.message;
+          imeiInput.classList.add('invalid');
+          return;
+        }
+        const imei = validation.value;
+
+        // Show loading skeleton
+        showLoading(true);
+        submitBtn.disabled = true;
+        imeiInput.disabled = true;
+
+        // Simulate async API call with delay for UX polish
+        setTimeout(() => {
+          showLoading(false);
+          imeiInput.disabled = false;
+          submitBtn.disabled = false;
+
+          // Decode IMEI data
+          const decoded = decodeIMEI(imei);
+          if (decoded.found) {
+            renderResult(decoded.data, imei);
+            showToast('IMEI decoded successfully!', 'success');
+          } else {
+            errmsgDiv.textContent = 'Device not found for the given IMEI.';
+            imeiInput.classList.add('invalid');
+            showToast('IMEI not recognized. Try another number.', 'error');
+          }
+        }, 1600);
+      });
+
+      // Accessibility: Enable keyboard navigation on sidebar links
+      const navLinks = sidebar.querySelectorAll('a');
+      navLinks.forEach(link => {
+        link.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            link.click();
+          }
+        });
+      });
+
+      // Close sidebar on Escape key in mobile view
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+          sidebar.classList.remove('open');
+          sidebarToggleBtn.setAttribute('aria-expanded', 'false');
+          sidebarToggleBtn.focus();
+        }
+      });
+
+      // Initialize buttons disabled by default
+      submitBtn.disabled = true;
+
+      // Keyboard shortcut: Ctrl+Enter submits form if valid
+      window.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          if (!submitBtn.disabled) {
+            form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+          }
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RGB Advertising</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: black;
-            margin: 0;
-        }
-
-        .banner {
-            font-size: 48px;
-            font-weight: bold;
-            text-align: center;
-            animation: blink 1s infinite;
-            background: linear-gradient(90deg, red, green, blue);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        @keyframes blink {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="banner">SAMSUNG FRP / GOOGLE RM60</div>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RGB Advertising</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: black;
-            margin: 0;
-        }
-
-        .banner {
-            font-size: 48px;
-            font-weight: bold;
-            text-align: center;
-            animation: blink 1s infinite;
-            background: linear-gradient(90deg, red, green, blue);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        @keyframes blink {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="banner">XIAOMI FRP / GOOGLE RM60</div>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RGB Advertising</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: black;
-            margin: 0;
-        }
-
-        .banner {
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            animation: blink 1s infinite;
-            background: linear-gradient(90deg, red, green, blue);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        @keyframes blink {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="banner">IPAD 2017 below iCloud remove RM50</div>
-</body>
-</html>
-
-
- <footer id="contact">
-    &copy; 2025 Unlock &amp; Repair Services with Zuu Caster All rights reserved.
-  </footer>
 
