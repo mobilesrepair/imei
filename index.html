@@ -1,248 +1,451 @@
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1" name="viewport"/>
-  <title>
-   PC Control Tool
-  </title>
-  <script src="https://cdn.tailwindcss.com">
-  </script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Customer Data & Progress Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
   <style>
-   body {
+    body {
       font-family: 'Inter', sans-serif;
     }
   </style>
- </head>
- <body class="bg-gray-100 min-h-screen flex flex-col">
-  <header class="bg-blue-700 text-white shadow-md">
-   <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-    <div class="flex items-center space-x-3">
-     <img alt="Blue square icon with white PC letters representing PC Control Tool logo" class="w-10 h-10 rounded" height="40" src="https://storage.googleapis.com/a1aa/image/d81c2e62-c41c-488b-f00a-b8e88e26de90.jpg" width="40"/>
-     <h1 class="text-2xl font-semibold">
-      PC Control Tool
-     </h1>
-    </div>
-    <nav class="hidden md:flex space-x-8 font-medium text-blue-200">
-     <a class="hover:text-white transition" href="#driver-signature">
-      Driver Signature
-     </a>
-     <a class="hover:text-white transition" href="#realtime-protection">
-      Realtime Protection
-     </a>
-     <a class="hover:text-white transition" href="#system-functions">
-      System Functions
-     </a>
-     <a class="hover:text-white transition" href="#about">
-      About
-     </a>
-    </nav>
-    <button aria-label="Toggle menu" class="md:hidden text-white focus:outline-none focus:ring-2 focus:ring-white" id="mobile-menu-button">
-     <i class="fas fa-bars fa-lg">
-     </i>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <h1 class="text-2xl font-semibold text-gray-800">Customer Progress Tracker</h1>
+    <button
+      id="addCustomerBtn"
+      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2"
+      aria-label="Add new customer"
+    >
+      <i class="fas fa-user-plus"></i> Add Customer
     </button>
-   </div>
-   <nav class="md:hidden bg-blue-600 text-blue-100 px-4 py-2 space-y-2 hidden" id="mobile-menu">
-    <a class="block py-1 hover:text-white" href="#driver-signature">
-     Driver Signature
-    </a>
-    <a class="block py-1 hover:text-white" href="#realtime-protection">
-     Realtime Protection
-    </a>
-    <a class="block py-1 hover:text-white" href="#system-functions">
-     System Functions
-    </a>
-    <a class="block py-1 hover:text-white" href="#about">
-     About
-    </a>
-   </nav>
   </header>
-  <main class="flex-grow container mx-auto px-4 py-8">
-   <section class="mb-12" id="driver-signature">
-    <h2 class="text-3xl font-semibold mb-4 text-blue-800">
-     Driver Signature Enforcement
-    </h2>
-    <p class="mb-6 text-gray-700 max-w-3xl">
-     Control the Windows Driver Signature Enforcement feature. This setting allows you to enable or disable the requirement for drivers to be digitally signed.
-    </p>
-    <div class="bg-white rounded-lg shadow p-6 max-w-md">
-     <div class="flex items-center justify-between mb-4">
-      <span class="font-medium text-lg text-gray-800">
-       Driver Signature Enforcement
-      </span>
-      <button aria-pressed="false" class="relative inline-flex items-center h-6 rounded-full w-12 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="driver-signature-toggle">
-       <span class="sr-only">
-        Toggle Driver Signature Enforcement
-       </span>
-       <span class="inline-block w-5 h-5 transform bg-gray-300 rounded-full transition-transform">
-       </span>
-      </button>
-     </div>
-     <p class="text-sm text-gray-600" id="driver-signature-status">
-      Status: Disabled
-     </p>
-    </div>
-   </section>
-   <section class="mb-12" id="realtime-protection">
-    <h2 class="text-3xl font-semibold mb-4 text-blue-800">
-     Realtime Protection
-    </h2>
-    <p class="mb-6 text-gray-700 max-w-3xl">
-     Enable or disable Windows Defender Realtime Protection to control active scanning and threat detection.
-    </p>
-    <div class="bg-white rounded-lg shadow p-6 max-w-md">
-     <div class="flex items-center justify-between mb-4">
-      <span class="font-medium text-lg text-gray-800">
-       Realtime Protection
-      </span>
-      <button aria-pressed="false" class="relative inline-flex items-center h-6 rounded-full w-12 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="realtime-protection-toggle">
-       <span class="sr-only">
-        Toggle Realtime Protection
-       </span>
-       <span class="inline-block w-5 h-5 transform bg-gray-300 rounded-full transition-transform">
-       </span>
-      </button>
-     </div>
-     <p class="text-sm text-gray-600" id="realtime-protection-status">
-      Status: Disabled
-     </p>
-    </div>
-   </section>
-   <section class="mb-12" id="system-functions">
-    <h2 class="text-3xl font-semibold mb-4 text-blue-800">
-     System Functions
-    </h2>
-    <p class="mb-6 text-gray-700 max-w-3xl">
-     Access and control various system functions such as restarting, shutting down, and toggling airplane mode.
-    </p>
-    <div class="bg-white rounded-lg shadow p-6 max-w-md space-y-6">
-     <div>
-      <h3 class="font-semibold text-lg mb-2 text-gray-800">
-       System Restart
-      </h3>
-      <button class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" id="restart-btn">
-       <i class="fas fa-sync-alt mr-2">
-       </i>
-       Restart PC
-      </button>
-     </div>
-     <div>
-      <h3 class="font-semibold text-lg mb-2 text-gray-800">
-       System Shutdown
-      </h3>
-      <button class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2 rounded shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700" id="shutdown-btn">
-       <i class="fas fa-power-off mr-2">
-       </i>
-       Shutdown PC
-      </button>
-     </div>
-     <div>
-      <h3 class="font-semibold text-lg mb-2 text-gray-800">
-       Airplane Mode
-      </h3>
-      <button aria-pressed="false" class="relative inline-flex items-center h-6 rounded-full w-12 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="airplane-toggle">
-       <span class="sr-only">
-        Toggle Airplane Mode
-       </span>
-       <span class="inline-block w-5 h-5 transform bg-gray-300 rounded-full transition-transform">
-       </span>
-      </button>
-      <p class="mt-2 text-sm text-gray-600" id="airplane-status">
-       Status: Off
-      </p>
-     </div>
-    </div>
-   </section>
-   <section class="max-w-3xl mx-auto text-gray-700" id="about">
-    <h2 class="text-3xl font-semibold mb-4 text-blue-800">
-     About PC Control Tool
-    </h2>
-    <p class="mb-4">
-     PC Control Tool is a web-based interface designed to simulate control over various Windows PC functions such as driver signature enforcement, realtime protection, and system operations like restart and shutdown.
-    </p>
-    <p>
-     <strong>
-      Note:
-     </strong>
-     This tool is a frontend simulation only and does not have the capability to change system settings or execute system commands. Actual control over these features requires administrative privileges and must be done through system utilities or scripts.
-    </p>
-   </section>
+
+  <main class="flex-grow container mx-auto p-4 max-w-7xl">
+    <section class="overflow-x-auto">
+      <table class="min-w-full bg-white rounded shadow overflow-hidden">
+        <thead class="bg-blue-600 text-white">
+          <tr>
+            <th class="text-left px-4 py-3 w-1/12">#</th>
+            <th class="text-left px-4 py-3 w-2/12">Name</th>
+            <th class="text-left px-4 py-3 w-2/12">Email</th>
+            <th class="text-left px-4 py-3 w-2/12">Phone</th>
+            <th class="text-left px-4 py-3 w-3/12">Progress Details</th>
+            <th class="text-center px-4 py-3 w-2/12">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="customerTableBody" class="divide-y divide-gray-200">
+        </tbody>
+      </table>
+    </section>
   </main>
-  <footer class="bg-blue-700 text-blue-200 py-6 mt-auto">
-   <div class="container mx-auto px-4 text-center text-sm">
-    © 2024 PC Control Tool. All rights reserved.
-   </div>
-  </footer>
+
+  <div
+    id="modalBackdrop"
+    class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+    aria-hidden="true"
+  >
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+      class="bg-white rounded-lg shadow-lg max-w-lg w-full mx-4"
+    >
+      <form id="customerForm" class="p-6 flex flex-col gap-4" novalidate>
+        <h2 id="modalTitle" class="text-xl font-semibold text-gray-800">Add Customer</h2>
+
+        <label class="flex flex-col">
+          <span class="font-medium text-gray-700">Full Name <span class="text-red-600">*</span></span>
+          <input
+            type="text"
+            id="nameInput"
+            name="name"
+            required
+            class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="John Doe"
+            autocomplete="off"
+          />
+          <span class="text-red-600 text-sm mt-1 hidden" id="nameError">Name is required.</span>
+        </label>
+
+        <label class="flex flex-col">
+          <span class="font-medium text-gray-700">Email <span class="text-red-600">*</span></span>
+          <input
+            type="email"
+            id="emailInput"
+            name="email"
+            required
+            class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="john@example.com"
+            autocomplete="off"
+          />
+          <span class="text-red-600 text-sm mt-1 hidden" id="emailError">Valid email is required.</span>
+        </label>
+
+        <label class="flex flex-col">
+          <span class="font-medium text-gray-700">Phone Number</span>
+          <input
+            type="tel"
+            id="phoneInput"
+            name="phone"
+            class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="+1 555 123 4567"
+            autocomplete="off"
+          />
+        </label>
+
+        <label class="flex flex-col">
+          <span class="font-medium text-gray-700">Progress Details</span>
+          <textarea
+            id="progressInput"
+            name="progress"
+            rows="4"
+            class="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+            placeholder="Enter progress details here..."
+          ></textarea>
+        </label>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button
+            type="button"
+            id="cancelBtn"
+            class="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            id="saveBtn"
+            class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
-   // Mobile menu toggle
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    mobileMenuButton.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
-    });
+    function debounce(func, wait) {
+      let timeout;
+      return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
 
-    // Toggle switch helper function
-    function toggleSwitch(button, statusText, onText, offText) {
-      const isOn = button.getAttribute('aria-pressed') === 'true';
-      if (isOn) {
-        button.setAttribute('aria-pressed', 'false');
-        button.querySelector('span').classList.remove('translate-x-6', 'bg-blue-600');
-        button.querySelector('span').classList.add('translate-x-0', 'bg-gray-300');
-        statusText.textContent = `Status: ${offText}`;
+    const addCustomerBtn = document.getElementById('addCustomerBtn');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const customerForm = document.getElementById('customerForm');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const customerTableBody = document.getElementById('customerTableBody');
+
+    const nameInput = document.getElementById('nameInput');
+    const emailInput = document.getElementById('emailInput');
+    const phoneInput = document.getElementById('phoneInput');
+    const progressInput = document.getElementById('progressInput');
+
+    const nameError = document.getElementById('nameError');
+    const emailError = document.getElementById('emailError');
+
+    let customers = [];
+    let editingCustomerId = null;
+
+    function loadCustomers() {
+      const data = localStorage.getItem('customers');
+      if (data) {
+        try {
+          customers = JSON.parse(data);
+        } catch {
+          customers = [];
+        }
       } else {
-        button.setAttribute('aria-pressed', 'true');
-        button.querySelector('span').classList.remove('translate-x-0', 'bg-gray-300');
-        button.querySelector('span').classList.add('translate-x-6', 'bg-blue-600');
-        statusText.textContent = `Status: ${onText}`;
+        customers = [];
       }
     }
 
-    // Initialize toggle switches with proper styling
-    function initToggle(button) {
-      const span = button.querySelector('span');
-      if (button.getAttribute('aria-pressed') === 'true') {
-        span.classList.add('translate-x-6', 'bg-blue-600');
-      } else {
-        span.classList.add('translate-x-0', 'bg-gray-300');
+    function saveCustomers() {
+      localStorage.setItem('customers', JSON.stringify(customers));
+    }
+
+    function renderCustomers() {
+      customerTableBody.innerHTML = '';
+      if (customers.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 6;
+        td.className = 'text-center py-6 text-gray-500';
+        td.textContent = 'No customers added yet.';
+        tr.appendChild(td);
+        customerTableBody.appendChild(tr);
+        return;
+      }
+
+      customers.forEach((customer, index) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-gray-50';
+
+        const tdIndex = document.createElement('td');
+        tdIndex.className = 'px-4 py-3 whitespace-nowrap text-gray-700';
+        tdIndex.textContent = index + 1;
+        tr.appendChild(tdIndex);
+
+        const tdName = document.createElement('td');
+        tdName.className = 'px-4 py-3 whitespace-nowrap text-gray-900 font-medium';
+        tdName.textContent = customer.name;
+        tr.appendChild(tdName);
+
+        const tdEmail = document.createElement('td');
+        tdEmail.className = 'px-4 py-3 whitespace-nowrap text-gray-700';
+        tdEmail.textContent = customer.email;
+        tr.appendChild(tdEmail);
+
+        const tdPhone = document.createElement('td');
+        tdPhone.className = 'px-4 py-3 whitespace-nowrap text-gray-700';
+        tdPhone.textContent = customer.phone || '-';
+        tr.appendChild(tdPhone);
+
+        const tdProgress = document.createElement('td');
+        tdProgress.className = 'px-4 py-3 whitespace-pre-wrap text-gray-700 max-w-xs';
+        tdProgress.textContent = customer.progress || '-';
+        tr.appendChild(tdProgress);
+
+        const tdActions = document.createElement('td');
+        tdActions.className = 'px-4 py-3 whitespace-nowrap text-center flex justify-center gap-3';
+
+        const editBtn = document.createElement('button');
+        editBtn.className =
+          'text-blue-600 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded';
+        editBtn.setAttribute('aria-label', `Edit customer ${customer.name}`);
+        editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+        editBtn.addEventListener('click', () => openEditModal(customer.id));
+        tdActions.appendChild(editBtn);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className =
+          'text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 rounded';
+        deleteBtn.setAttribute('aria-label', `Delete customer ${customer.name}`);
+        deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        deleteBtn.addEventListener('click', () => deleteCustomer(customer.id));
+        tdActions.appendChild(deleteBtn);
+
+        tr.appendChild(tdActions);
+
+        customerTableBody.appendChild(tr);
+      });
+    }
+
+    function openAddModal() {
+      editingCustomerId = null;
+      customerForm.reset();
+      nameError.classList.add('hidden');
+      emailError.classList.add('hidden');
+      modalBackdrop.classList.remove('hidden');
+      nameInput.focus();
+      document.getElementById('modalTitle').textContent = 'Add Customer';
+    }
+
+    function openEditModal(id) {
+      const customer = customers.find((c) => c.id === id);
+      if (!customer) return;
+      editingCustomerId = id;
+      nameInput.value = customer.name;
+      emailInput.value = customer.email;
+      phoneInput.value = customer.phone || '';
+      progressInput.value = customer.progress || '';
+      nameError.classList.add('hidden');
+      emailError.classList.add('hidden');
+      modalBackdrop.classList.remove('hidden');
+      nameInput.focus();
+      document.getElementById('modalTitle').textContent = 'Edit Customer';
+    }
+
+    function closeModal() {
+      modalBackdrop.classList.add('hidden');
+      editingCustomerId = null;
+    }
+
+    function deleteCustomer(id) {
+      if (confirm('Are you sure you want to delete this customer?')) {
+        customers = customers.filter((c) => c.id !== id);
+        saveCustomers();
+        renderCustomers();
       }
     }
 
-    // Driver Signature Toggle
-    const driverSignatureToggle = document.getElementById('driver-signature-toggle');
-    const driverSignatureStatus = document.getElementById('driver-signature-status');
-    initToggle(driverSignatureToggle);
-    driverSignatureToggle.addEventListener('click', () => {
-      toggleSwitch(driverSignatureToggle, driverSignatureStatus, 'Enabled', 'Disabled');
+    function validateForm() {
+      let valid = true;
+
+      if (!nameInput.value.trim()) {
+        nameError.classList.remove('hidden');
+        valid = false;
+      } else {
+        nameError.classList.add('hidden');
+      }
+
+      if (!emailInput.value.trim() || !emailInput.checkValidity()) {
+        emailError.classList.remove('hidden');
+        valid = false;
+      } else {
+        emailError.classList.add('hidden');
+      }
+
+      return valid;
+    }
+
+    function saveCustomer() {
+      if (!validateForm()) return false;
+
+      const newCustomer = {
+        id: editingCustomerId || crypto.randomUUID(),
+        name: nameInput.value.trim(),
+        email: emailInput.value.trim(),
+        phone: phoneInput.value.trim(),
+        progress: progressInput.value.trim(),
+      };
+
+      if (editingCustomerId) {
+        customers = customers.map((c) => (c.id === editingCustomerId ? newCustomer : c));
+      } else {
+        customers.push(newCustomer);
+      }
+
+      saveCustomers();
+      renderCustomers();
+      closeModal();
+      return true;
+    }
+
+    const autoSaveProgress = debounce(() => {
+      if (!editingCustomerId) return;
+
+      const idx = customers.findIndex((c) => c.id === editingCustomerId);
+      if (idx === -1) return;
+
+      customers[idx].progress = progressInput.value;
+      saveCustomers();
+      renderCustomers();
+    }, 500);
+
+    addCustomerBtn.addEventListener('click', openAddModal);
+
+    cancelBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeModal();
     });
 
-    // Realtime Protection Toggle
-    const realtimeProtectionToggle = document.getElementById('realtime-protection-toggle');
-    const realtimeProtectionStatus = document.getElementById('realtime-protection-status');
-    initToggle(realtimeProtectionToggle);
-    realtimeProtectionToggle.addEventListener('click', () => {
-      toggleSwitch(realtimeProtectionToggle, realtimeProtectionStatus, 'Enabled', 'Disabled');
+    modalBackdrop.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) {
+        closeModal();
+      }
     });
 
-    // Airplane Mode Toggle
-    const airplaneToggle = document.getElementById('airplane-toggle');
-    const airplaneStatus = document.getElementById('airplane-status');
-    initToggle(airplaneToggle);
-    airplaneToggle.addEventListener('click', () => {
-      toggleSwitch(airplaneToggle, airplaneStatus, 'On', 'Off');
+    customerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      saveCustomer();
     });
 
-    // System Restart and Shutdown buttons simulate action with alert
-    const restartBtn = document.getElementById('restart-btn');
-    const shutdownBtn = document.getElementById('shutdown-btn');
-
-    restartBtn.addEventListener('click', () => {
-      alert('Simulated: System Restart initiated.');
+    progressInput.addEventListener('input', () => {
+      autoSaveProgress();
     });
 
-    shutdownBtn.addEventListener('click', () => {
-      alert('Simulated: System Shutdown initiated.');
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modalBackdrop.classList.contains('hidden')) {
+        closeModal();
+      }
     });
+
+    // Save form inputs on modal close or page unload to keep data if modal is open
+    function saveFormDataToSession() {
+      const formData = {
+        name: nameInput.value,
+        email: emailInput.value,
+        phone: phoneInput.value,
+        progress: progressInput.value,
+        editingCustomerId,
+      };
+      sessionStorage.setItem('customerFormData', JSON.stringify(formData));
+    }
+
+    function loadFormDataFromSession() {
+      const data = sessionStorage.getItem('customerFormData');
+      if (!data) return false;
+      try {
+        const formData = JSON.parse(data);
+        if (!formData) return false;
+        editingCustomerId = formData.editingCustomerId || null;
+        nameInput.value = formData.name || '';
+        emailInput.value = formData.email || '';
+        phoneInput.value = formData.phone || '';
+        progressInput.value = formData.progress || '';
+        nameError.classList.add('hidden');
+        emailError.classList.add('hidden');
+        if (editingCustomerId) {
+          document.getElementById('modalTitle').textContent = 'Edit Customer';
+        } else {
+          document.getElementById('modalTitle').textContent = 'Add Customer';
+        }
+        modalBackdrop.classList.remove('hidden');
+        nameInput.focus();
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    // Save form data on input changes (debounced)
+    const autoSaveFormData = debounce(() => {
+      if (!modalBackdrop.classList.contains('hidden')) {
+        saveFormDataToSession();
+      }
+    }, 300);
+
+    nameInput.addEventListener('input', autoSaveFormData);
+    emailInput.addEventListener('input', autoSaveFormData);
+    phoneInput.addEventListener('input', autoSaveFormData);
+    progressInput.addEventListener('input', () => {
+      autoSaveProgress();
+      autoSaveFormData();
+    });
+
+    // Clear session storage on modal close or save
+    function clearFormDataSession() {
+      sessionStorage.removeItem('customerFormData');
+    }
+
+    cancelBtn.addEventListener('click', () => {
+      clearFormDataSession();
+    });
+
+    customerForm.addEventListener('submit', () => {
+      clearFormDataSession();
+    });
+
+    modalBackdrop.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) {
+        clearFormDataSession();
+      }
+    });
+
+    window.addEventListener('beforeunload', () => {
+      if (!modalBackdrop.classList.contains('hidden')) {
+        saveFormDataToSession();
+      }
+    });
+
+    // On page load, load customers and restore form data if any
+    loadCustomers();
+    renderCustomers();
+    loadFormDataFromSession();
   </script>
- </body>
+</body>
 </html>
