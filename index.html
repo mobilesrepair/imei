@@ -3,135 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZuuCaster Customer Manager</title>
+    <title>PhoneRepair Pro - Repair Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .progress-bar { transition: width 0.3s ease; }
-        .infected { background-color: #fee2e2; }
-        .selected-row { background-color: #e0f2fe; }
-        .glow { animation: glow 2s infinite alternate; }
-        @keyframes glow {
-            from { box-shadow: 0 0 5px #3b82f6; }
-            to { box-shadow: 0 0 20px #3b82f6; }
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+        }
+        .status-progress {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .status-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .attachment-thumbnail {
+            transition: all 0.2s ease;
+        }
+        .attachment-thumbnail:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        #previewImage {
+            max-height: 70vh;
+            max-width: 90vw;
         }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-8">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-800">ZuuCaster Customer Manager</h1>
-                <p class="text-gray-600">Complete customer management with security scanning</p>
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-mobile-alt text-2xl"></i>
+                <span class="text-xl font-bold">PhoneRepair Pro</span>
             </div>
-            <div class="bg-blue-100 p-3 rounded-full glow">
-                <i class="fas fa-user-shield text-blue-600 text-2xl"></i>
+            <div class="hidden md:flex space-x-6">
+                <a href="#dashboard" class="hover:text-blue-200">Dashboard</a>
+                <a href="#repairs" class="hover:text-blue-200">Repairs</a>
+                <a href="#customers" class="hover:text-blue-200">Customers</a>
+                <a href="#reports" class="hover:text-blue-200">Reports</a>
             </div>
+            <button class="md:hidden text-2xl" id="mobileMenuButton">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
+    </nav>
 
-        <!-- Main Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Customer Form -->
-            <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-1">
-                <h2 class="text-xl font-semibold mb-4 border-b pb-2">
-                    <i class="fas fa-user-edit mr-2 text-blue-500"></i>Customer Details
-                </h2>
-                
-                <form id="customerForm" class="space-y-4">
-                    <input type="hidden" id="customerId">
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                            <input type="date" id="date" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+    <!-- Mobile Menu -->
+    <div class="md:hidden hidden bg-blue-700 text-white" id="mobileMenu">
+        <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+            <a href="#dashboard" class="py-2 border-b border-blue-600">Dashboard</a>
+            <a href="#repairs" class="py-2 border-b border-blue-600">Repairs</a>
+            <a href="#customers" class="py-2 border-b border-blue-600">Customers</a>
+            <a href="#reports" class="py-2">Reports</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Dashboard Overview</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Stats Cards -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="bg-blue-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-tools text-blue-600 text-xl"></i>
                         </div>
                         <div>
-                            <label for="model" class="block text-sm font-medium text-gray-700 mb-1">Model</label>
-                            <input type="text" id="model" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Device model" required>
+                            <p class="text-sm text-gray-500">In Progress</p>
+                            <h3 class="text-2xl font-bold" id="inProgressCount">0</h3>
                         </div>
                     </div>
-                    
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                        <input type="text" id="name" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Customer name" required>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                            <input type="tel" id="phone" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Phone number">
-                        </div>
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" id="email" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Email address">
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                        <textarea id="address" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Full address"></textarea>
-                    </div>
-                    
-                    <div>
-                        <label for="issue" class="block text-sm font-medium text-gray-700 mb-1">Device Issue</label>
-                        <textarea id="issue" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Describe the problem" required></textarea>
-                    </div>
-                    
-                    <div class="flex space-x-3 pt-2">
-                        <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
-                            <i class="fas fa-save mr-2"></i>Save
-                        </button>
-                        <button type="button" id="clearBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md">
-                            <i class="fas fa-broom mr-2"></i>Clear
-                        </button>
-                    </div>
-                </form>
-                
-                <!-- File Upload Section -->
-                <div class="mt-6 border-t pt-4">
-                    <h3 class="font-medium mb-3"><i class="fas fa-file-upload mr-2 text-blue-500"></i>Attach Files</h3>
-                    <input type="file" id="fileUpload" class="hidden" multiple>
-                    <button id="selectFilesBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md w-full">
-                        <i class="fas fa-file-import mr-2"></i>Select Files
-                    </button>
-                    <div id="fileList" class="mt-2 text-sm text-gray-600 space-y-1"></div>
                 </div>
                 
-                <!-- Scan Section -->
-                <div class="mt-6 border-t pt-4">
-                    <h3 class="font-medium mb-3"><i class="fas fa-shield-virus mr-2 text-blue-500"></i>Security Scan</h3>
-                    <div class="flex space-x-3">
-                        <button id="scanFilesBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md" disabled>
-                            <i class="fas fa-search mr-2"></i>Scan Files
-                        </button>
-                        <button id="scanDeviceBtn" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md">
-                            <i class="fas fa-mobile-alt mr-2"></i>Scan Device
-                        </button>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Completed Today</p>
+                            <h3 class="text-2xl font-bold" id="completedTodayCount">0</h3>
+                        </div>
                     </div>
-                    
-                    <div id="scanProgress" class="mt-4 hidden">
-                        <div class="flex justify-between text-sm mb-1">
-                            <span>Scan Progress</span>
-                            <span id="scanPercent">0%</span>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="bg-yellow-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-clock text-yellow-600 text-xl"></i>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div id="scanBar" class="progress-bar bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
+                        <div>
+                            <p class="text-sm text-gray-500">Waiting for Parts</p>
+                            <h3 class="text-2xl font-bold" id="waitingPartsCount">0</h3>
                         </div>
-                        <p id="scanStatus" class="text-sm text-gray-600 mt-1"></p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="bg-purple-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-users text-purple-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">New Customers</p>
+                            <h3 class="text-2xl font-bold" id="newCustomersCount">0</h3>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Customer List -->
-            <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-2">
-                <div class="flex justify-between items-center mb-4 border-b pb-2">
-                    <h2 class="text-xl font-semibold">
-                        <i class="fas fa-users mr-2 text-blue-500"></i>Customer Records
-                    </h2>
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold mb-4">Recent Repairs</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issue</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentRepairsTable" class="bg-white divide-y divide-gray-200">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Repairs Section -->
+        <section id="repairs" class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 border-b pb-2">Repair Management</h2>
+                <button id="newRepairBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                    <i class="fas fa-plus mr-2"></i>New Repair
+                </button>
+            </div>
+            
+            <!-- Repair Form (Hidden by default) -->
+            <div id="repairFormContainer" class="hidden bg-white rounded-lg shadow-md p-6 mb-8">
+                <form id="repairForm">
+                    <input type="hidden" id="repairId">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Customer Information -->
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4 border-b pb-2">Customer Information</h3>
+                            
+                            <div class="mb-4">
+                                <label for="customerName" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <input type="text" id="customerName" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="customerPhone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                <input type="tel" id="customerPhone" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="customerEmail" class="block text-sm font-medium text-gray-700 mb-1">Email (Optional)</label>
+                                <input type="email" id="customerEmail" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        
+                        <!-- Device Information -->
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4 border-b pb-2">Device Information</h3>
+                            
+                            <div class="mb-4">
+                                <label for="deviceModel" class="block text-sm font-medium text-gray-700 mb-1">Device Model</label>
+                                <input type="text" id="deviceModel" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="deviceColor" class="block text-sm font-medium text-gray-700 mb-1">Color</label>
+                                <input type="text" id="deviceColor" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="deviceStorage" class="block text-sm font-medium text-gray-700 mb-1">Storage</label>
+                                <input type="text" id="deviceStorage" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Repair Details -->
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold mb-4 border-b pb-2">Repair Details</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="repairDate" class="block text-sm font-medium text-gray-700 mb-1">Date Received</label>
+                                <input type="date" id="repairDate" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <div class="flex space-x-4">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="repairStatus" value="Progress" class="h-4 w-4 text-yellow-500 focus:ring-yellow-500 border-gray-300" checked>
+                                        <span class="ml-2">In Progress</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="repairStatus" value="Success" class="h-4 w-4 text-green-500 focus:ring-green-500 border-gray-300">
+                                        <span class="ml-2">Completed</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <label for="repairIssue" class="block text-sm font-medium text-gray-700 mb-1">Issue Description</label>
+                            <textarea id="repairIssue" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required></textarea>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <label for="repairNotes" class="block text-sm font-medium text-gray-700 mb-1">Technician Notes</label>
+                            <textarea id="repairNotes" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <label for="repairCost" class="block text-sm font-medium text-gray-700 mb-1">Estimated Cost ($)</label>
+                            <input type="number" step="0.01" id="repairCost" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    
+                    <!-- Attachments -->
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold mb-4 border-b pb-2">Attachments</h3>
+                        
+                        <div class="mb-4">
+                            <input type="file" id="repairAttachments" class="hidden" multiple accept="image/*">
+                            <button type="button" id="addAttachmentBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md">
+                                <i class="fas fa-paperclip mr-2"></i>Add Photos
+                            </button>
+                            <span id="attachmentCount" class="text-sm text-gray-500 ml-2">No files selected</span>
+                        </div>
+                        
+                        <div id="attachmentPreview" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                            <!-- Attachment thumbnails will appear here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="mt-8 flex justify-end space-x-3">
+                        <button type="button" id="cancelRepairBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md">
+                            Cancel
+                        </button>
+                        <button type="submit" id="saveRepairBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                            Save Repair
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Repairs Table -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">All Repairs</h3>
                     <div class="flex space-x-2">
-                        <input type="text" id="searchInput" placeholder="Search..." class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
-                        <button id="exportBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-md text-sm">
+                        <input type="text" id="repairSearch" placeholder="Search repairs..." class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                        <button id="exportRepairsBtn" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm">
                             <i class="fas fa-file-export mr-1"></i>Export
                         </button>
                     </div>
@@ -149,8 +295,8 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="customerTable" class="bg-white divide-y divide-gray-200">
-                            <!-- Sample data will be inserted here -->
+                        <tbody id="repairsTable" class="bg-white divide-y divide-gray-200">
+                            <!-- Will be populated by JavaScript -->
                         </tbody>
                     </table>
                 </div>
@@ -158,463 +304,460 @@
                 <!-- Pagination -->
                 <div class="flex justify-between items-center mt-4">
                     <div class="text-sm text-gray-500">
-                        Showing <span id="showingFrom">1</span> to <span id="showingTo">5</span> of <span id="totalRecords">0</span> records
+                        Showing <span id="repairsFrom">1</span> to <span id="repairsTo">5</span> of <span id="totalRepairs">0</span> records
                     </div>
                     <div class="flex space-x-2">
-                        <button id="prevPage" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-md text-sm disabled">
+                        <button id="prevRepairsPage" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-md text-sm disabled">
                             <i class="fas fa-chevron-left"></i>
                         </button>
-                        <button id="nextPage" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-md text-sm disabled">
+                        <button id="nextRepairsPage" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-md text-sm disabled">
                             <i class="fas fa-chevron-right"></i>
                         </button>
                     </div>
                 </div>
-                
-                <!-- Customer Details View -->
-                <div id="customerDetailView" class="hidden mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <h3 class="font-medium text-blue-800 mb-2">Customer Details</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <p><strong>Date:</strong> <span id="detailDate"></span></p>
-                            <p><strong>Name:</strong> <span id="detailName"></span></p>
-                            <p><strong>Phone:</strong> <span id="detailPhone"></span></p>
-                        </div>
-                        <div>
-                            <p><strong>Model:</strong> <span id="detailModel"></span></p>
-                            <p><strong>Email:</strong> <span id="detailEmail"></span></p>
-                            <p><strong>Address:</strong> <span id="detailAddress"></span></p>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <p><strong>Issue:</strong> <span id="detailIssue"></span></p>
-                    </div>
-                </div>
             </div>
-        </div>
-    </div>
-    
-    <!-- Notification -->
-    <div id="notification" class="fixed bottom-4 right-4 hidden">
-        <div class="bg-blue-600 text-white px-4 py-2 rounded-md shadow-lg max-w-xs">
-            <i class="fas fa-check-circle mr-2"></i>
-            <span id="notificationText">Operation successful</span>
+        </section>
+
+        <!-- Image Preview Modal -->
+        <div id="imagePreviewModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+            <div class="bg-white rounded-lg p-4 max-w-4xl max-h-screen">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Attachment Preview</h3>
+                    <button id="closePreviewBtn" class="text-gray-500 hover:text-gray-700 text-2xl">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <img id="previewImage" src="" alt="Preview" class="mx-auto">
+                <p id="previewCaption" class="text-center mt-2 text-sm text-gray-600"></p>
+            </div>
         </div>
     </div>
 
     <script>
-        // Customer data storage
-        let customers = JSON.parse(localStorage.getItem('customers')) || [];
+        // Sample data storage (in a real app, this would be from a database)
+        let repairs = JSON.parse(localStorage.getItem('repairs')) || [];
+        let currentRepairPage = 1;
+        const repairsPerPage = 5;
         let selectedFiles = [];
-        let currentPage = 1;
-        const recordsPerPage = 5;
-        
-        // DOM elements
-        const customerForm = document.getElementById('customerForm');
-        const customerTable = document.getElementById('customerTable');
-        const searchInput = document.getElementById('searchInput');
-        const fileUpload = document.getElementById('fileUpload');
-        const selectFilesBtn = document.getElementById('selectFilesBtn');
-        const fileList = document.getElementById('fileList');
-        const scanFilesBtn = document.getElementById('scanFilesBtn');
-        const scanDeviceBtn = document.getElementById('scanDeviceBtn');
-        const scanProgress = document.getElementById('scanProgress');
-        const scanBar = document.getElementById('scanBar');
-        const scanPercent = document.getElementById('scanPercent');
-        const scanStatus = document.getElementById('scanStatus');
-        const exportBtn = document.getElementById('exportBtn');
-        const prevPage = document.getElementById('prevPage');
-        const nextPage = document.getElementById('nextPage');
-        const showingFrom = document.getElementById('showingFrom');
-        const showingTo = document.getElementById('showingTo');
-        const totalRecords = document.getElementById('totalRecords');
-        const customerDetailView = document.getElementById('customerDetailView');
         
         // Initialize the app
-        function init() {
-            // Set today's date as default
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default for new repairs
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('date').value = today;
+            document.getElementById('repairDate').value = today;
             
-            // Load customer data
-            renderCustomerTable();
-            updatePagination();
+            // Load initial data
+            updateDashboardStats();
+            renderRecentRepairs();
+            renderRepairsTable();
             
             // Event listeners
-            customerForm.addEventListener('submit', saveCustomer);
-            document.getElementById('clearBtn').addEventListener('click', clearForm);
-            searchInput.addEventListener('input', filterCustomers);
-            selectFilesBtn.addEventListener('click', () => fileUpload.click());
-            fileUpload.addEventListener('change', handleFileSelect);
-            scanFilesBtn.addEventListener('click', startFileScan);
-            scanDeviceBtn.addEventListener('click', startDeviceScan);
-            exportBtn.addEventListener('click', exportData);
-            prevPage.addEventListener('click', () => changePage(-1));
-            nextPage.addEventListener('click', () => changePage(1));
+            document.getElementById('mobileMenuButton').addEventListener('click', toggleMobileMenu);
+            document.getElementById('newRepairBtn').addEventListener('click', showNewRepairForm);
+            document.getElementById('cancelRepairBtn').addEventListener('click', cancelRepairForm);
+            document.getElementById('repairForm').addEventListener('submit', saveRepair);
+            document.getElementById('addAttachmentBtn').addEventListener('click', () => {
+                document.getElementById('repairAttachments').click();
+            });
+            document.getElementById('repairAttachments').addEventListener('change', handleFileSelect);
+            document.getElementById('repairSearch').addEventListener('input', filterRepairs);
+            document.getElementById('exportRepairsBtn').addEventListener('click', exportRepairs);
+            document.getElementById('prevRepairsPage').addEventListener('click', () => changeRepairsPage(-1));
+            document.getElementById('nextRepairsPage').addEventListener('click', () => changeRepairsPage(1));
+            document.getElementById('closePreviewBtn').addEventListener('click', closeImagePreview);
+        });
+        
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
         }
         
-        // Save customer data
-        function saveCustomer(e) {
-            e.preventDefault();
-            
-            const customerId = document.getElementById('customerId').value;
-            const customerData = {
-                date: document.getElementById('date').value,
-                name: document.getElementById('name').value,
-                model: document.getElementById('model').value,
-                phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value,
-                address: document.getElementById('address').value,
-                issue: document.getElementById('issue').value,
-                files: selectedFiles,
-                status: 'Pending',
-                scanResults: null
-            };
-            
-            if (customerId) {
-                // Update existing customer
-                customers = customers.map(cust => 
-                    cust.id === customerId ? { ...customerData, id: customerId } : cust
-                );
-                showNotification('Customer updated successfully');
-            } else {
-                // Add new customer
-                const newCustomer = {
-                    ...customerData,
-                    id: Date.now().toString()
-                };
-                customers.push(newCustomer);
-                showNotification('Customer added successfully');
-            }
-            
-            // Save to local storage and refresh
-            localStorage.setItem('customers', JSON.stringify(customers));
-            clearForm();
-            renderCustomerTable();
-            updatePagination();
-        }
-        
-        // Load customer into form
-        function loadCustomer(id) {
-            const customer = customers.find(c => c.id === id);
-            if (!customer) return;
-            
-            document.getElementById('customerId').value = customer.id;
-            document.getElementById('date').value = customer.date;
-            document.getElementById('name').value = customer.name;
-            document.getElementById('model').value = customer.model;
-            document.getElementById('phone').value = customer.phone;
-            document.getElementById('email').value = customer.email;
-            document.getElementById('address').value = customer.address;
-            document.getElementById('issue').value = customer.issue;
-            
-            // Load files
-            selectedFiles = customer.files || [];
-            renderFileList();
-            scanFilesBtn.disabled = selectedFiles.length === 0;
+        // Show form for new repair
+        function showNewRepairForm() {
+            document.getElementById('repairFormContainer').classList.remove('hidden');
+            document.getElementById('repairForm').reset();
+            document.getElementById('repairId').value = '';
+            document.querySelector('input[name="repairStatus"][value="Progress"]').checked = true;
+            selectedFiles = [];
+            document.getElementById('attachmentPreview').innerHTML = '';
+            document.getElementById('attachmentCount').textContent = 'No files selected';
             
             // Scroll to form
-            document.querySelector('[tabindex="0"]').scrollIntoView({
+            document.getElementById('repairFormContainer').scrollIntoView({
                 behavior: 'smooth'
             });
         }
         
-        // View customer details
-        function viewCustomerDetails(id) {
-            const customer = customers.find(c => c.id === id);
-            if (!customer) return;
-            
-            document.getElementById('detailDate').textContent = customer.date;
-            document.getElementById('detailName').textContent = customer.name;
-            document.getElementById('detailModel').textContent = customer.model;
-            document.getElementById('detailPhone').textContent = customer.phone;
-            document.getElementById('detailEmail').textContent = customer.email;
-            document.getElementById('detailAddress').textContent = customer.address;
-            document.getElementById('detailIssue').textContent = customer.issue;
-            
-            customerDetailView.classList.remove('hidden');
+        // Cancel repair form
+        function cancelRepairForm() {
+            if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+                document.getElementById('repairFormContainer').classList.add('hidden');
+            }
         }
         
-        // Render customer table
-        function renderCustomerTable(filteredCustomers = null) {
-            const data = filteredCustomers || customers;
-            const start = (currentPage - 1) * recordsPerPage;
-            const end = start + recordsPerPage;
-            const paginatedData = data.slice(start, end);
+        // Handle file selection for attachments
+        function handleFileSelect(e) {
+            const files = Array.from(e.target.files);
+            selectedFiles = files;
             
-            customerTable.innerHTML = '';
+            // Update UI
+            document.getElementById('attachmentCount').textContent = 
+                `${files.length} file${files.length !== 1 ? 's' : ''} selected`;
             
-            if (paginatedData.length === 0) {
-                customerTable.innerHTML = `
+            // Display thumbnails
+            const previewContainer = document.getElementById('attachmentPreview');
+            previewContainer.innerHTML = '';
+            
+            files.forEach((file, index) => {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const thumb = document.createElement('div');
+                    thumb.className = 'attachment-thumbnail cursor-pointer';
+                    thumb.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview" class="w-full h-24 object-cover rounded-md">
+                        <p class="text-xs truncate mt-1">${file.name}</p>
+                    `;
+                    
+                    thumb.addEventListener('click', () => previewImage(e.target.result, file.name));
+                    
+                    previewContainer.appendChild(thumb);
+                };
+                
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Preview image in modal
+        function previewImage(src, caption) {
+            document.getElementById('previewImage').src = src;
+            document.getElementById('previewCaption').textContent = caption;
+            document.getElementById('imagePreviewModal').classList.remove('hidden');
+        }
+        
+        // Close image preview
+        function closeImagePreview() {
+            document.getElementById('imagePreviewModal').classList.add('hidden');
+        }
+        
+        // Save repair (to localStorage in this example)
+        function saveRepair(e) {
+            e.preventDefault();
+            
+            const repairId = document.getElementById('repairId').value;
+            const repairData = {
+                customer: {
+                    name: document.getElementById('customerName').value,
+                    phone: document.getElementById('customerPhone').value,
+                    email: document.getElementById('customerEmail').value
+                },
+                device: {
+                    model: document.getElementById('deviceModel').value,
+                    color: document.getElementById('deviceColor').value,
+                    storage: document.getElementById('deviceStorage').value
+                },
+                repair: {
+                    date: document.getElementById('repairDate').value,
+                    issue: document.getElementById('repairIssue').value,
+                    notes: document.getElementById('repairNotes').value,
+                    cost: document.getElementById('repairCost').value,
+                    status: document.querySelector('input[name="repairStatus"]:checked').value,
+                    attachments: selectedFiles.map(file => ({
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        lastModified: file.lastModified
+                    }))
+                },
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            if (repairId) {
+                // Update existing repair
+                const index = repairs.findIndex(r => r.id === repairId);
+                if (index !== -1) {
+                    repairs[index] = { ...repairs[index], ...repairData, id: repairId };
+                }
+                showNotification('Repair updated successfully');
+            } else {
+                // Add new repair
+                const newRepair = {
+                    ...repairData,
+                    id: Date.now().toString()
+                };
+                repairs.push(newRepair);
+                showNotification('Repair added successfully');
+            }
+            
+            // Save to localStorage and refresh
+            localStorage.setItem('repairs', JSON.stringify(repairs));
+            document.getElementById('repairFormContainer').classList.add('hidden');
+            updateDashboardStats();
+            renderRecentRepairs();
+            renderRepairsTable();
+        }
+        
+        // Load repair into form
+        function loadRepair(id) {
+            const repair = repairs.find(r => r.id === id);
+            if (!repair) return;
+            
+            document.getElementById('repairId').value = repair.id;
+            document.getElementById('customerName').value = repair.customer.name;
+            document.getElementById('customerPhone').value = repair.customer.phone;
+            document.getElementById('customerEmail').value = repair.customer.email || '';
+            document.getElementById('deviceModel').value = repair.device.model;
+            document.getElementById('deviceColor').value = repair.device.color || '';
+            document.getElementById('deviceStorage').value = repair.device.storage || '';
+            document.getElementById('repairDate').value = repair.repair.date;
+            document.getElementById('repairIssue').value = repair.repair.issue;
+            document.getElementById('repairNotes').value = repair.repair.notes || '';
+            document.getElementById('repairCost').value = repair.repair.cost || '';
+            document.querySelector(`input[name="repairStatus"][value="${repair.repair.status}"]`).checked = true;
+            
+            // Handle attachments (in a real app, you'd need to fetch the actual files)
+            selectedFiles = [];
+            const previewContainer = document.getElementById('attachmentPreview');
+            previewContainer.innerHTML = '';
+            
+            if (repair.repair.attachments && repair.repair.attachments.length > 0) {
+                document.getElementById('attachmentCount').textContent = 
+                    `${repair.repair.attachments.length} file${repair.repair.attachments.length !== 1 ? 's' : ''} attached`;
+                
+                repair.repair.attachments.forEach(attachment => {
+                    const thumb = document.createElement('div');
+                    thumb.className = 'attachment-thumbnail cursor-pointer';
+                    thumb.innerHTML = `
+                        <div class="w-full h-24 bg-gray-100 rounded-md flex items-center justify-center">
+                            <i class="fas fa-file text-3xl text-gray-400"></i>
+                        </div>
+                        <p class="text-xs truncate mt-1">${attachment.name}</p>
+                    `;
+                    previewContainer.appendChild(thumb);
+                });
+            } else {
+                document.getElementById('attachmentCount').textContent = 'No files attached';
+            }
+            
+            document.getElementById('repairFormContainer').classList.remove('hidden');
+            
+            // Scroll to form
+            document.getElementById('repairFormContainer').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+        
+        // Delete repair
+        function deleteRepair(id) {
+            if (confirm('Are you sure you want to delete this repair record?')) {
+                repairs = repairs.filter(r => r.id !== id);
+                localStorage.setItem('repairs', JSON.stringify(repairs));
+                updateDashboardStats();
+                renderRecentRepairs();
+                renderRepairsTable();
+                showNotification('Repair deleted successfully');
+            }
+        }
+        
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            document.getElementById('inProgressCount').textContent = 
+                repairs.filter(r => r.repair.status === 'Progress').length;
+            
+            document.getElementById('completedTodayCount').textContent = 
+                repairs.filter(r => r.repair.status === 'Success' && r.repair.date === today).length;
+            
+            // Note: "Waiting Parts" would require an additional status in a real app
+            document.getElementById('waitingPartsCount').textContent = 
+                repairs.filter(r => r.repair.notes && r.repair.notes.includes('waiting for parts')).length;
+            
+            // New customers this week (simplified for demo)
+            document.getElementById('newCustomersCount').textContent = 
+                repairs.length > 5 ? 5 : repairs.length;
+        }
+        
+        // Render recent repairs (for dashboard)
+        function renderRecentRepairs() {
+            const table = document.getElementById('recentRepairsTable');
+            table.innerHTML = '';
+            
+            const recentRepairs = [...repairs]
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 5);
+            
+            if (recentRepairs.length === 0) {
+                table.innerHTML = `
                     <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">No customer records found</td>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">No recent repairs found</td>
                     </tr>
                 `;
                 return;
             }
             
-            paginatedData.forEach(customer => {
+            recentRepairs.forEach(repair => {
                 const row = document.createElement('tr');
-                row.className = 'hover:bg-gray-50 cursor-pointer';
-                row.dataset.id = customer.id;
+                row.className = 'hover:bg-gray-50';
                 
                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">${customer.date}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${customer.name}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${customer.model}</td>
-                    <td class="px-6 py-4 max-w-xs truncate">${customer.issue}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${repair.repair.date}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${repair.customer.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${repair.device.model}</td>
+                    <td class="px-6 py-4 max-w-xs truncate">${repair.repair.issue}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            ${customer.status === 'Completed' ? 'bg-green-100 text-green-800' : 
-                              customer.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : 
-                              'bg-blue-100 text-blue-800'}">
-                            ${customer.status}
+                        <span class="status-badge ${repair.repair.status === 'Success' ? 'status-success' : 'status-progress'}">
+                            ${repair.repair.status}
+                        </span>
+                    </td>
+                `;
+                
+                table.appendChild(row);
+            });
+        }
+        
+        // Render repairs table
+        function renderRepairsTable(filteredRepairs = null) {
+            const data = filteredRepairs || repairs;
+            const start = (currentRepairPage - 1) * repairsPerPage;
+            const end = start + repairsPerPage;
+            const paginatedData = data.slice(start, end);
+            
+            const table = document.getElementById('repairsTable');
+            table.innerHTML = '';
+            
+            if (paginatedData.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">No repair records found</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            paginatedData.forEach(repair => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">${repair.repair.date}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${repair.customer.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${repair.device.model}</td>
+                    <td class="px-6 py-4 max-w-xs truncate">${repair.repair.issue}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="status-badge ${repair.repair.status === 'Success' ? 'status-success' : 'status-progress'}">
+                            ${repair.repair.status}
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button class="text-blue-600 hover:text-blue-900 mr-2 edit-btn">
+                        <button class="text-blue-600 hover:text-blue-900 mr-2 edit-btn" data-id="${repair.id}">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="text-red-600 hover:text-red-900 delete-btn">
+                        <button class="text-red-600 hover:text-red-900 delete-btn" data-id="${repair.id}">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </td>
                 `;
                 
-                customerTable.appendChild(row);
-                
-                // Add row click event for viewing details
-                row.addEventListener('click', (e) => {
-                    if (!e.target.closest('.edit-btn') && !e.target.closest('.delete-btn')) {
-                        viewCustomerDetails(customer.id);
-                    }
-                });
-                
-                // Add edit button event
-                row.querySelector('.edit-btn').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    loadCustomer(customer.id);
-                });
-                
-                // Add delete button event
-                row.querySelector('.delete-btn').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (confirm(`Delete ${customer.name}'s record?`)) {
-                        deleteCustomer(customer.id);
-                    }
+                table.appendChild(row);
+            });
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    loadRepair(e.currentTarget.dataset.id);
                 });
             });
-        }
-        
-        // Delete customer
-        function deleteCustomer(id) {
-            customers = customers.filter(c => c.id !== id);
-            localStorage.setItem('customers', JSON.stringify(customers));
-            renderCustomerTable();
-            updatePagination();
-            showNotification('Customer deleted successfully');
             
-            if (document.getElementById('customerId').value === id) {
-                clearForm();
-            }
-        }
-        
-        // Handle file selection
-        function handleFileSelect(e) {
-            selectedFiles = Array.from(e.target.files).map(file => ({
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                status: 'Not scanned'
-            }));
-            
-            renderFileList();
-            scanFilesBtn.disabled = selectedFiles.length === 0;
-        }
-        
-        // Render file list
-        function renderFileList() {
-            fileList.innerHTML = '';
-            
-            if (selectedFiles.length === 0) {
-                fileList.innerHTML = '<p class="text-gray-500">No files selected</p>';
-                return;
-            }
-            
-            selectedFiles.forEach((file, index) => {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'flex items-center justify-between py-1 border-b border-gray-100';
-                
-                fileItem.innerHTML = `
-                    <div class="flex-1 truncate mr-2">${file.name}</div>
-                    <div class="flex items-center text-xs ${file.status === 'Clean' ? 'text-green-600' : 
-                                                   file.status === 'Infected' ? 'text-red-600' : 
-                                                   'text-gray-500'}">
-                        <span class="mr-2">${file.size ? formatFileSize(file.size) : ''}</span>
-                        <span>${file.status}</span>
-                    </div>
-                `;
-                
-                fileList.appendChild(fileItem);
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    deleteRepair(e.currentTarget.dataset.id);
+                });
             });
+            
+            // Update pagination info
+            updateRepairsPagination(data.length);
         }
         
-        // Clear form
-        function clearForm() {
-            customerForm.reset();
-            document.getElementById('customerId').value = '';
-            selectedFiles = [];
-            renderFileList();
-            scanFilesBtn.disabled = true;
+        // Update repairs pagination
+        function updateRepairsPagination(total = repairs.length) {
+            document.getElementById('totalRepairs').textContent = total;
+            
+            const pageCount = Math.ceil(total / repairsPerPage);
+            const start = (currentRepairPage - 1) * repairsPerPage + 1;
+            const end = Math.min(currentRepairPage * repairsPerPage, total);
+            
+            document.getElementById('repairsFrom').textContent = start;
+            document.getElementById('repairsTo').textContent = end;
+            
+            document.getElementById('prevRepairsPage').disabled = currentRepairPage === 1;
+            document.getElementById('nextRepairsPage').disabled = currentRepairPage === pageCount || pageCount === 0;
         }
         
-        // Filter customers based on search input
-        function filterCustomers() {
-            const searchTerm = searchInput.value.toLowerCase();
-            if (!searchTerm) {
-                renderCustomerTable();
-                updatePagination();
-                return;
-            }
-            
-            const filtered = customers.filter(customer => 
-                customer.name.toLowerCase().includes(searchTerm) ||
-                customer.model.toLowerCase().includes(searchTerm) ||
-                customer.phone.includes(searchTerm) ||
-                customer.issue.toLowerCase().includes(searchTerm)
-            );
-            
-            renderCustomerTable(filtered);
-            updatePagination(filtered.length);
-        }
-        
-        // Update pagination controls
-        function updatePagination(total = customers.length) {
-            totalRecords.textContent = total;
-            
-            const pageCount = Math.ceil(total / recordsPerPage);
-            const start = (currentPage - 1) * recordsPerPage + 1;
-            const end = Math.min(currentPage * recordsPerPage, total);
-            
-            showingFrom.textContent = start;
-            showingTo.textContent = end;
-            
-            prevPage.disabled = currentPage === 1;
-            nextPage.disabled = currentPage === pageCount || pageCount === 0;
-        }
-        
-        // Change page
-        function changePage(direction) {
-            const pageCount = Math.ceil(customers.length / recordsPerPage);
-            const newPage = currentPage + direction;
+        // Change repairs page
+        function changeRepairsPage(direction) {
+            const pageCount = Math.ceil(repairs.length / repairsPerPage);
+            const newPage = currentRepairPage + direction;
             
             if (newPage > 0 && newPage <= pageCount) {
-                currentPage = newPage;
-                renderCustomerTable();
-                updatePagination();
+                currentRepairPage = newPage;
+                renderRepairsTable();
             }
         }
         
-        // Start file scan (simulated)
-        function startFileScan() {
-            if (selectedFiles.length === 0) return;
+        // Filter repairs
+        function filterRepairs() {
+            const searchTerm = document.getElementById('repairSearch').value.toLowerCase();
+            if (!searchTerm) {
+                renderRepairsTable();
+                return;
+            }
             
-            scanProgress.classList.remove('hidden');
-            scanStatus.textContent = 'Preparing to scan files...';
+            const filtered = repairs.filter(repair => 
+                repair.customer.name.toLowerCase().includes(searchTerm) ||
+                repair.device.model.toLowerCase().includes(searchTerm) ||
+                repair.customer.phone.includes(searchTerm) ||
+                repair.repair.issue.toLowerCase().includes(searchTerm) ||
+                repair.repair.status.toLowerCase().includes(searchTerm)
+            );
             
-            let progress = 0;
-            let filesScanned = 0;
-            const totalFiles = selectedFiles.length;
-            const interval = setInterval(() => {
-                progress += 100 / (totalFiles * 10);
-                
-                if (filesScanned < totalFiles && progress >= (filesScanned + 1) * (100 / totalFiles)) {
-                    filesScanned++;
-                    selectedFiles[filesScanned - 1].status = Math.random() > 0.7 ? 'Infected' : 'Clean';
-                    selectedFiles[filesScanned - 1].scanResult = selectedFiles[filesScanned - 1].status === 'Infected' ? 
-                        'Potential threat detected' : 'No threats found';
-                    
-                    scanStatus.textContent = `Scanning ${selectedFiles[filesScanned - 1].name}...`;
-                    renderFileList();
-                }
-                
-                scanBar.style.width = `${Math.min(progress, 100)}%`;
-                scanPercent.textContent = `${Math.min(Math.round(progress), 100)}%`;
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    scanStatus.textContent = 'Scan completed';
-                    
-                    // Update customer record if editing
-                    const customerId = document.getElementById('customerId').value;
-                    if (customerId) {
-                        const customerIndex = customers.findIndex(c => c.id === customerId);
-                        if (customerIndex !== -1) {
-                            customers[customerIndex].files = [...selectedFiles];
-                            customers[customerIndex].scanResults = {
-                                date: new Date().toLocaleString(),
-                                infectedFiles: selectedFiles.filter(f => f.status === 'Infected').length
-                            };
-                            localStorage.setItem('customers', JSON.stringify(customers));
-                        }
-                    }
-                    
-                    showNotification('File scan completed');
-                }
-            }, 300);
+            renderRepairsTable(filtered);
+            updateRepairsPagination(filtered.length);
         }
         
-        // Start device scan (simulated)
-        function startDeviceScan() {
-            scanProgress.classList.remove('hidden');
-            scanStatus.textContent = 'Preparing to scan device...';
+        // Export repairs
+        function exportRepairs() {
+            // In a real app, this would generate a CSV or Excel file
+            // For this demo, we'll just show a notification
             
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 2;
-                scanBar.style.width = `${progress}%`;
-                scanPercent.textContent = `${progress}%`;
-                
-                // Update status messages
-                if (progress < 30) {
-                    scanStatus.textContent = "Scanning system files...";
-                } else if (progress < 60) {
-                    scanStatus.textContent = "Checking for malware signatures...";
-                } else if (progress < 90) {
-                    scanStatus.textContent = "Analyzing behavior patterns...";
-                } else {
-                    scanStatus.textContent = "Finalizing scan results...";
-                }
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    scanStatus.textContent = 'Device scan completed - No threats found';
-                    showNotification('Device scan completed');
-                }
-            }, 100);
-        }
-        
-        // Export data
-        function exportData() {
-            const dataStr = JSON.stringify(customers, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            showNotification('Repairs exported successfully (demo)');
             
-            const exportFileDefaultName = 'customer-data.json';
+            // This would be the actual export code:
+            /*
+            const headers = ['Date', 'Customer', 'Phone', 'Device', 'Issue', 'Status', 'Cost'];
+            const data = repairs.map(repair => [
+                repair.repair.date,
+                repair.customer.name,
+                repair.customer.phone,
+                repair.device.model,
+                repair.repair.issue,
+                repair.repair.status,
+                repair.repair.cost || 'N/A'
+            ]);
             
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
+            let csvContent = "data:text/csv;charset=utf-8," 
+                + headers.join(",") + "\n" 
+                + data.map(row => row.join(",")).join("\n");
             
-            showNotification('Data exported successfully');
-        }
-        
-        // Format file size
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `repairs_export_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            */
         }
         
         // Show notification
@@ -627,9 +770,6 @@
                 notification.classList.add('hidden');
             }, 3000);
         }
-        
-        // Initialize the app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
