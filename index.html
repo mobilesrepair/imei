@@ -1,1 +1,248 @@
-c
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   PC Control Tool
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+  <style>
+   body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+ </head>
+ <body class="bg-gray-100 min-h-screen flex flex-col">
+  <header class="bg-blue-700 text-white shadow-md">
+   <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+     <img alt="Blue square icon with white PC letters representing PC Control Tool logo" class="w-10 h-10 rounded" height="40" src="https://storage.googleapis.com/a1aa/image/d81c2e62-c41c-488b-f00a-b8e88e26de90.jpg" width="40"/>
+     <h1 class="text-2xl font-semibold">
+      PC Control Tool
+     </h1>
+    </div>
+    <nav class="hidden md:flex space-x-8 font-medium text-blue-200">
+     <a class="hover:text-white transition" href="#driver-signature">
+      Driver Signature
+     </a>
+     <a class="hover:text-white transition" href="#realtime-protection">
+      Realtime Protection
+     </a>
+     <a class="hover:text-white transition" href="#system-functions">
+      System Functions
+     </a>
+     <a class="hover:text-white transition" href="#about">
+      About
+     </a>
+    </nav>
+    <button aria-label="Toggle menu" class="md:hidden text-white focus:outline-none focus:ring-2 focus:ring-white" id="mobile-menu-button">
+     <i class="fas fa-bars fa-lg">
+     </i>
+    </button>
+   </div>
+   <nav class="md:hidden bg-blue-600 text-blue-100 px-4 py-2 space-y-2 hidden" id="mobile-menu">
+    <a class="block py-1 hover:text-white" href="#driver-signature">
+     Driver Signature
+    </a>
+    <a class="block py-1 hover:text-white" href="#realtime-protection">
+     Realtime Protection
+    </a>
+    <a class="block py-1 hover:text-white" href="#system-functions">
+     System Functions
+    </a>
+    <a class="block py-1 hover:text-white" href="#about">
+     About
+    </a>
+   </nav>
+  </header>
+  <main class="flex-grow container mx-auto px-4 py-8">
+   <section class="mb-12" id="driver-signature">
+    <h2 class="text-3xl font-semibold mb-4 text-blue-800">
+     Driver Signature Enforcement
+    </h2>
+    <p class="mb-6 text-gray-700 max-w-3xl">
+     Control the Windows Driver Signature Enforcement feature. This setting allows you to enable or disable the requirement for drivers to be digitally signed.
+    </p>
+    <div class="bg-white rounded-lg shadow p-6 max-w-md">
+     <div class="flex items-center justify-between mb-4">
+      <span class="font-medium text-lg text-gray-800">
+       Driver Signature Enforcement
+      </span>
+      <button aria-pressed="false" class="relative inline-flex items-center h-6 rounded-full w-12 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="driver-signature-toggle">
+       <span class="sr-only">
+        Toggle Driver Signature Enforcement
+       </span>
+       <span class="inline-block w-5 h-5 transform bg-gray-300 rounded-full transition-transform">
+       </span>
+      </button>
+     </div>
+     <p class="text-sm text-gray-600" id="driver-signature-status">
+      Status: Disabled
+     </p>
+    </div>
+   </section>
+   <section class="mb-12" id="realtime-protection">
+    <h2 class="text-3xl font-semibold mb-4 text-blue-800">
+     Realtime Protection
+    </h2>
+    <p class="mb-6 text-gray-700 max-w-3xl">
+     Enable or disable Windows Defender Realtime Protection to control active scanning and threat detection.
+    </p>
+    <div class="bg-white rounded-lg shadow p-6 max-w-md">
+     <div class="flex items-center justify-between mb-4">
+      <span class="font-medium text-lg text-gray-800">
+       Realtime Protection
+      </span>
+      <button aria-pressed="false" class="relative inline-flex items-center h-6 rounded-full w-12 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="realtime-protection-toggle">
+       <span class="sr-only">
+        Toggle Realtime Protection
+       </span>
+       <span class="inline-block w-5 h-5 transform bg-gray-300 rounded-full transition-transform">
+       </span>
+      </button>
+     </div>
+     <p class="text-sm text-gray-600" id="realtime-protection-status">
+      Status: Disabled
+     </p>
+    </div>
+   </section>
+   <section class="mb-12" id="system-functions">
+    <h2 class="text-3xl font-semibold mb-4 text-blue-800">
+     System Functions
+    </h2>
+    <p class="mb-6 text-gray-700 max-w-3xl">
+     Access and control various system functions such as restarting, shutting down, and toggling airplane mode.
+    </p>
+    <div class="bg-white rounded-lg shadow p-6 max-w-md space-y-6">
+     <div>
+      <h3 class="font-semibold text-lg mb-2 text-gray-800">
+       System Restart
+      </h3>
+      <button class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" id="restart-btn">
+       <i class="fas fa-sync-alt mr-2">
+       </i>
+       Restart PC
+      </button>
+     </div>
+     <div>
+      <h3 class="font-semibold text-lg mb-2 text-gray-800">
+       System Shutdown
+      </h3>
+      <button class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2 rounded shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700" id="shutdown-btn">
+       <i class="fas fa-power-off mr-2">
+       </i>
+       Shutdown PC
+      </button>
+     </div>
+     <div>
+      <h3 class="font-semibold text-lg mb-2 text-gray-800">
+       Airplane Mode
+      </h3>
+      <button aria-pressed="false" class="relative inline-flex items-center h-6 rounded-full w-12 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="airplane-toggle">
+       <span class="sr-only">
+        Toggle Airplane Mode
+       </span>
+       <span class="inline-block w-5 h-5 transform bg-gray-300 rounded-full transition-transform">
+       </span>
+      </button>
+      <p class="mt-2 text-sm text-gray-600" id="airplane-status">
+       Status: Off
+      </p>
+     </div>
+    </div>
+   </section>
+   <section class="max-w-3xl mx-auto text-gray-700" id="about">
+    <h2 class="text-3xl font-semibold mb-4 text-blue-800">
+     About PC Control Tool
+    </h2>
+    <p class="mb-4">
+     PC Control Tool is a web-based interface designed to simulate control over various Windows PC functions such as driver signature enforcement, realtime protection, and system operations like restart and shutdown.
+    </p>
+    <p>
+     <strong>
+      Note:
+     </strong>
+     This tool is a frontend simulation only and does not have the capability to change system settings or execute system commands. Actual control over these features requires administrative privileges and must be done through system utilities or scripts.
+    </p>
+   </section>
+  </main>
+  <footer class="bg-blue-700 text-blue-200 py-6 mt-auto">
+   <div class="container mx-auto px-4 text-center text-sm">
+    © 2024 PC Control Tool. All rights reserved.
+   </div>
+  </footer>
+  <script>
+   // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Toggle switch helper function
+    function toggleSwitch(button, statusText, onText, offText) {
+      const isOn = button.getAttribute('aria-pressed') === 'true';
+      if (isOn) {
+        button.setAttribute('aria-pressed', 'false');
+        button.querySelector('span').classList.remove('translate-x-6', 'bg-blue-600');
+        button.querySelector('span').classList.add('translate-x-0', 'bg-gray-300');
+        statusText.textContent = `Status: ${offText}`;
+      } else {
+        button.setAttribute('aria-pressed', 'true');
+        button.querySelector('span').classList.remove('translate-x-0', 'bg-gray-300');
+        button.querySelector('span').classList.add('translate-x-6', 'bg-blue-600');
+        statusText.textContent = `Status: ${onText}`;
+      }
+    }
+
+    // Initialize toggle switches with proper styling
+    function initToggle(button) {
+      const span = button.querySelector('span');
+      if (button.getAttribute('aria-pressed') === 'true') {
+        span.classList.add('translate-x-6', 'bg-blue-600');
+      } else {
+        span.classList.add('translate-x-0', 'bg-gray-300');
+      }
+    }
+
+    // Driver Signature Toggle
+    const driverSignatureToggle = document.getElementById('driver-signature-toggle');
+    const driverSignatureStatus = document.getElementById('driver-signature-status');
+    initToggle(driverSignatureToggle);
+    driverSignatureToggle.addEventListener('click', () => {
+      toggleSwitch(driverSignatureToggle, driverSignatureStatus, 'Enabled', 'Disabled');
+    });
+
+    // Realtime Protection Toggle
+    const realtimeProtectionToggle = document.getElementById('realtime-protection-toggle');
+    const realtimeProtectionStatus = document.getElementById('realtime-protection-status');
+    initToggle(realtimeProtectionToggle);
+    realtimeProtectionToggle.addEventListener('click', () => {
+      toggleSwitch(realtimeProtectionToggle, realtimeProtectionStatus, 'Enabled', 'Disabled');
+    });
+
+    // Airplane Mode Toggle
+    const airplaneToggle = document.getElementById('airplane-toggle');
+    const airplaneStatus = document.getElementById('airplane-status');
+    initToggle(airplaneToggle);
+    airplaneToggle.addEventListener('click', () => {
+      toggleSwitch(airplaneToggle, airplaneStatus, 'On', 'Off');
+    });
+
+    // System Restart and Shutdown buttons simulate action with alert
+    const restartBtn = document.getElementById('restart-btn');
+    const shutdownBtn = document.getElementById('shutdown-btn');
+
+    restartBtn.addEventListener('click', () => {
+      alert('Simulated: System Restart initiated.');
+    });
+
+    shutdownBtn.addEventListener('click', () => {
+      alert('Simulated: System Shutdown initiated.');
+    });
+  </script>
+ </body>
+</html>
