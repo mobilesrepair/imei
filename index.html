@@ -1,19 +1,31 @@
+Here's the updated version with a status field (Progress/Success) and edit functionality for it:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZuuCaster Customer Manager</title>
+    <title>Device Service Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .progress-bar { transition: width 0.3s ease; }
-        .infected { background-color: #fee2e2; }
         .selected-row { background-color: #e0f2fe; }
-        .glow { animation: glow 2s infinite alternate; }
-        @keyframes glow {
-            from { box-shadow: 0 0 5px #3b82f6; }
-            to { box-shadow: 0 0 20px #3b82f6; }
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+        }
+        .status-progress {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .status-success {
+            background-color: #d1fae5;
+            color: #065f46;
         }
     </style>
 </head>
@@ -21,65 +33,64 @@
     <div class="container mx-auto px-4 py-8">
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-800">ZuuCaster Customer Manager</h1>
-                <p class="text-gray-600">Complete customer management with security scanning</p>
-            </div>
-            <div class="bg-blue-100 p-3 rounded-full glow">
-                <i class="fas fa-user-shield text-blue-600 text-2xl"></i>
+            <h1 class="text-3xl font-bold text-gray-800">Device Service Tracker</h1>
+            <div class="bg-blue-100 p-3 rounded-full">
+                <i class="fas fa-mobile-alt text-blue-600 text-2xl"></i>
             </div>
         </div>
 
-        <!-- Main Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Customer Form -->
-            <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-1">
-                <h2 class="text-xl font-semibold mb-4 border-b pb-2">
-                    <i class="fas fa-user-edit mr-2 text-blue-500"></i>Customer Details
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Service Form -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4">
+                    <i class="fas fa-edit mr-2 text-blue-500"></i>Service Details
                 </h2>
                 
-                <form id="customerForm" class="space-y-4">
-                    <input type="hidden" id="customerId">
+                <form id="serviceForm" class="space-y-4">
+                    <input type="hidden" id="serviceId">
                     
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                            <input type="date" id="date" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
-                        </div>
-                        <div>
-                            <label for="model" class="block text-sm font-medium text-gray-700 mb-1">Model</label>
-                            <input type="text" id="model" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Device model" required>
-                        </div>
-                    </div>
-                    
+                    <!-- Date -->
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                        <input type="text" id="name" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Customer name" required>
+                        <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                        <input type="date" id="date" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                            <input type="tel" id="phone" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Phone number">
-                        </div>
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" id="email" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Email address">
-                        </div>
-                    </div>
-                    
+                    <!-- Device Model -->
                     <div>
-                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                        <textarea id="address" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Full address"></textarea>
+                        <label for="model" class="block text-sm font-medium text-gray-700 mb-1">Device Model</label>
+                        <input type="text" id="model" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="e.g. iPhone 12 Pro" required>
                     </div>
                     
+                    <!-- Phone Number -->
                     <div>
-                        <label for="issue" class="block text-sm font-medium text-gray-700 mb-1">Device Issue</label>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" id="phone" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Phone number" required>
+                    </div>
+                    
+                    <!-- Device Issues -->
+                    <div>
+                        <label for="issue" class="block text-sm font-medium text-gray-700 mb-1">Device Issues</label>
                         <textarea id="issue" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Describe the problem" required></textarea>
                     </div>
                     
+                    <!-- Status (only shown when editing) -->
+                    <div id="statusField" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <div class="flex space-x-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="status" value="Progress" class="h-4 w-4 text-yellow-500 focus:ring-yellow-500 border-gray-300">
+                                <span class="ml-2">In Progress</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="status" value="Success" class="h-4 w-4 text-green-500 focus:ring-green-500 border-gray-300">
+                                <span class="ml-2">Completed</span>
+                            </label>
+                        </div>
+                    </div>
+                    
                     <div class="flex space-x-3 pt-2">
-                        <button type="submit" id="saveBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                        <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
                             <i class="fas fa-save mr-2"></i>Save
                         </button>
                         <button type="button" id="clearBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md">
@@ -87,54 +98,15 @@
                         </button>
                     </div>
                 </form>
-                
-                <!-- File Upload Section -->
-                <div class="mt-6 border-t pt-4">
-                    <h3 class="font-medium mb-3"><i class="fas fa-file-upload mr-2 text-blue-500"></i>Attach Files</h3>
-                    <input type="file" id="fileUpload" class="hidden" multiple>
-                    <button id="selectFilesBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md w-full">
-                        <i class="fas fa-file-import mr-2"></i>Select Files
-                    </button>
-                    <div id="fileList" class="mt-2 text-sm text-gray-600 space-y-1"></div>
-                </div>
-                
-                <!-- Scan Section -->
-                <div class="mt-6 border-t pt-4">
-                    <h3 class="font-medium mb-3"><i class="fas fa-shield-virus mr-2 text-blue-500"></i>Security Scan</h3>
-                    <div class="flex space-x-3">
-                        <button id="scanFilesBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md" disabled>
-                            <i class="fas fa-search mr-2"></i>Scan Files
-                        </button>
-                        <button id="scanDeviceBtn" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md">
-                            <i class="fas fa-mobile-alt mr-2"></i>Scan Device
-                        </button>
-                    </div>
-                    
-                    <div id="scanProgress" class="mt-4 hidden">
-                        <div class="flex justify-between text-sm mb-1">
-                            <span>Scan Progress</span>
-                            <span id="scanPercent">0%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div id="scanBar" class="progress-bar bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
-                        </div>
-                        <p id="scanStatus" class="text-sm text-gray-600 mt-1"></p>
-                    </div>
-                </div>
             </div>
             
-            <!-- Customer List -->
-            <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-2">
-                <div class="flex justify-between items-center mb-4 border-b pb-2">
+            <!-- Service Records -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-semibold">
-                        <i class="fas fa-users mr-2 text-blue-500"></i>Customer Records
+                        <i class="fas fa-list-alt mr-2 text-blue-500"></i>Service Records
                     </h2>
-                    <div class="flex space-x-2">
-                        <input type="text" id="searchInput" placeholder="Search..." class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
-                        <button id="exportBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-md text-sm">
-                            <i class="fas fa-file-export mr-1"></i>Export
-                        </button>
-                    </div>
+                    <input type="text" id="searchInput" placeholder="Search..." class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                 </div>
                 
                 <div class="overflow-x-auto">
@@ -142,47 +114,33 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issue</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Model</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="customerTable" class="bg-white divide-y divide-gray-200">
-                            <!-- Sample data will be inserted here -->
+                        <tbody id="serviceTable" class="bg-white divide-y divide-gray-200">
+                            <!-- Records will be inserted here -->
                         </tbody>
                     </table>
                 </div>
                 
-                <!-- Pagination -->
-                <div class="flex justify-between items-center mt-4">
-                    <div class="text-sm text-gray-500">
-                        Showing <span id="showingFrom">1</span> to <span id="showingTo">5</span> of <span id="totalRecords">0</span> records
-                    </div>
-                    <div class="flex space-x-2">
-                        <button id="prevPage" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-md text-sm disabled">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button id="nextPage" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded-md text-sm disabled">
-                            <i class="fas fa-chevron-right"></i>
+                <!-- Record Details View -->
+                <div id="recordDetailView" class="hidden mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-medium text-blue-800">Record Details</h3>
+                        <button id="closeDetailView" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
-                </div>
-                
-                <!-- Customer Details View -->
-                <div id="customerDetailView" class="hidden mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <h3 class="font-medium text-blue-800 mb-2">Customer Details</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
                             <p><strong>Date:</strong> <span id="detailDate"></span></p>
-                            <p><strong>Name:</strong> <span id="detailName"></span></p>
-                            <p><strong>Phone:</strong> <span id="detailPhone"></span></p>
+                            <p><strong>Model:</strong> <span id="detailModel"></span></p>
                         </div>
                         <div>
-                            <p><strong>Model:</strong> <span id="detailModel"></span></p>
-                            <p><strong>Email:</strong> <span id="detailEmail"></span></p>
-                            <p><strong>Address:</strong> <span id="detailAddress"></span></p>
+                            <p><strong>Phone:</strong> <span id="detailPhone"></span></p>
+                            <p><strong>Status:</strong> <span id="detailStatus"></span></p>
                         </div>
                     </div>
                     <div class="mt-3">
@@ -195,441 +153,52 @@
     
     <!-- Notification -->
     <div id="notification" class="fixed bottom-4 right-4 hidden">
-        <div class="bg-blue-600 text-white px-4 py-2 rounded-md shadow-lg max-w-xs">
+        <div class="bg-blue-600 text-white px-4 py-2 rounded-md shadow-lg">
             <i class="fas fa-check-circle mr-2"></i>
             <span id="notificationText">Operation successful</span>
         </div>
     </div>
 
     <script>
-        // Customer data storage
-        let customers = JSON.parse(localStorage.getItem('customers')) || [];
-        let selectedFiles = [];
-        let currentPage = 1;
-        const recordsPerPage = 5;
-        
-        // DOM elements
-        const customerForm = document.getElementById('customerForm');
-        const customerTable = document.getElementById('customerTable');
-        const searchInput = document.getElementById('searchInput');
-        const fileUpload = document.getElementById('fileUpload');
-        const selectFilesBtn = document.getElementById('selectFilesBtn');
-        const fileList = document.getElementById('fileList');
-        const scanFilesBtn = document.getElementById('scanFilesBtn');
-        const scanDeviceBtn = document.getElementById('scanDeviceBtn');
-        const scanProgress = document.getElementById('scanProgress');
-        const scanBar = document.getElementById('scanBar');
-        const scanPercent = document.getElementById('scanPercent');
-        const scanStatus = document.getElementById('scanStatus');
-        const exportBtn = document.getElementById('exportBtn');
-        const prevPage = document.getElementById('prevPage');
-        const nextPage = document.getElementById('nextPage');
-        const showingFrom = document.getElementById('showingFrom');
-        const showingTo = document.getElementById('showingTo');
-        const totalRecords = document.getElementById('totalRecords');
-        const customerDetailView = document.getElementById('customerDetailView');
+        // Service records storage
+        let records = JSON.parse(localStorage.getItem('serviceRecords')) || [];
         
         // Initialize the app
-        function init() {
+        document.addEventListener('DOMContentLoaded', function() {
             // Set today's date as default
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('date').value = today;
             
-            // Load customer data
-            renderCustomerTable();
-            updatePagination();
+            // Load records
+            renderServiceTable();
             
             // Event listeners
-            customerForm.addEventListener('submit', saveCustomer);
+            document.getElementById('serviceForm').addEventListener('submit', saveRecord);
             document.getElementById('clearBtn').addEventListener('click', clearForm);
-            searchInput.addEventListener('input', filterCustomers);
-            selectFilesBtn.addEventListener('click', () => fileUpload.click());
-            fileUpload.addEventListener('change', handleFileSelect);
-            scanFilesBtn.addEventListener('click', startFileScan);
-            scanDeviceBtn.addEventListener('click', startDeviceScan);
-            exportBtn.addEventListener('click', exportData);
-            prevPage.addEventListener('click', () => changePage(-1));
-            nextPage.addEventListener('click', () => changePage(1));
-        }
+            document.getElementById('searchInput').addEventListener('input', filterRecords);
+            document.getElementById('closeDetailView').addEventListener('click', () => {
+                document.getElementById('recordDetailView').classList.add('hidden');
+            });
+        });
         
-        // Save customer data
-        function saveCustomer(e) {
+        // Save service record
+        function saveRecord(e) {
             e.preventDefault();
             
-            const customerId = document.getElementById('customerId').value;
-            const customerData = {
+            const recordId = document.getElementById('serviceId').value;
+            const statusField = document.getElementById('statusField');
+            const status = statusField.classList.contains('hidden') ? 'Progress' : 
+                          document.querySelector('input[name="status"]:checked').value;
+            
+            const recordData = {
                 date: document.getElementById('date').value,
-                name: document.getElementById('name').value,
                 model: document.getElementById('model').value,
                 phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value,
-                address: document.getElementById('address').value,
                 issue: document.getElementById('issue').value,
-                files: selectedFiles,
-                status: 'Pending',
-                scanResults: null
+                status: status
             };
             
-            if (customerId) {
-                // Update existing customer
-                customers = customers.map(cust => 
-                    cust.id === customerId ? { ...customerData, id: customerId } : cust
-                );
-                showNotification('Customer updated successfully');
-            } else {
-                // Add new customer
-                const newCustomer = {
-                    ...customerData,
-                    id: Date.now().toString()
-                };
-                customers.push(newCustomer);
-                showNotification('Customer added successfully');
-            }
-            
-            // Save to local storage and refresh
-            localStorage.setItem('customers', JSON.stringify(customers));
-            clearForm();
-            renderCustomerTable();
-            updatePagination();
-        }
-        
-        // Load customer into form
-        function loadCustomer(id) {
-            const customer = customers.find(c => c.id === id);
-            if (!customer) return;
-            
-            document.getElementById('customerId').value = customer.id;
-            document.getElementById('date').value = customer.date;
-            document.getElementById('name').value = customer.name;
-            document.getElementById('model').value = customer.model;
-            document.getElementById('phone').value = customer.phone;
-            document.getElementById('email').value = customer.email;
-            document.getElementById('address').value = customer.address;
-            document.getElementById('issue').value = customer.issue;
-            
-            // Load files
-            selectedFiles = customer.files || [];
-            renderFileList();
-            scanFilesBtn.disabled = selectedFiles.length === 0;
-            
-            // Scroll to form
-            document.querySelector('[tabindex="0"]').scrollIntoView({
-                behavior: 'smooth'
-            });
-        }
-        
-        // View customer details
-        function viewCustomerDetails(id) {
-            const customer = customers.find(c => c.id === id);
-            if (!customer) return;
-            
-            document.getElementById('detailDate').textContent = customer.date;
-            document.getElementById('detailName').textContent = customer.name;
-            document.getElementById('detailModel').textContent = customer.model;
-            document.getElementById('detailPhone').textContent = customer.phone;
-            document.getElementById('detailEmail').textContent = customer.email;
-            document.getElementById('detailAddress').textContent = customer.address;
-            document.getElementById('detailIssue').textContent = customer.issue;
-            
-            customerDetailView.classList.remove('hidden');
-        }
-        
-        // Render customer table
-        function renderCustomerTable(filteredCustomers = null) {
-            const data = filteredCustomers || customers;
-            const start = (currentPage - 1) * recordsPerPage;
-            const end = start + recordsPerPage;
-            const paginatedData = data.slice(start, end);
-            
-            customerTable.innerHTML = '';
-            
-            if (paginatedData.length === 0) {
-                customerTable.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">No customer records found</td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            paginatedData.forEach(customer => {
-                const row = document.createElement('tr');
-                row.className = 'hover:bg-gray-50 cursor-pointer';
-                row.dataset.id = customer.id;
-                
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">${customer.date}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${customer.name}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${customer.model}</td>
-                    <td class="px-6 py-4 max-w-xs truncate">${customer.issue}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            ${customer.status === 'Completed' ? 'bg-green-100 text-green-800' : 
-                              customer.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : 
-                              'bg-blue-100 text-blue-800'}">
-                            ${customer.status}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button class="text-blue-600 hover:text-blue-900 mr-2 edit-btn">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="text-red-600 hover:text-red-900 delete-btn">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </td>
-                `;
-                
-                customerTable.appendChild(row);
-                
-                // Add row click event for viewing details
-                row.addEventListener('click', (e) => {
-                    if (!e.target.closest('.edit-btn') && !e.target.closest('.delete-btn')) {
-                        viewCustomerDetails(customer.id);
-                    }
-                });
-                
-                // Add edit button event
-                row.querySelector('.edit-btn').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    loadCustomer(customer.id);
-                });
-                
-                // Add delete button event
-                row.querySelector('.delete-btn').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (confirm(`Delete ${customer.name}'s record?`)) {
-                        deleteCustomer(customer.id);
-                    }
-                });
-            });
-        }
-        
-        // Delete customer
-        function deleteCustomer(id) {
-            customers = customers.filter(c => c.id !== id);
-            localStorage.setItem('customers', JSON.stringify(customers));
-            renderCustomerTable();
-            updatePagination();
-            showNotification('Customer deleted successfully');
-            
-            if (document.getElementById('customerId').value === id) {
-                clearForm();
-            }
-        }
-        
-        // Handle file selection
-        function handleFileSelect(e) {
-            selectedFiles = Array.from(e.target.files).map(file => ({
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                status: 'Not scanned'
-            }));
-            
-            renderFileList();
-            scanFilesBtn.disabled = selectedFiles.length === 0;
-        }
-        
-        // Render file list
-        function renderFileList() {
-            fileList.innerHTML = '';
-            
-            if (selectedFiles.length === 0) {
-                fileList.innerHTML = '<p class="text-gray-500">No files selected</p>';
-                return;
-            }
-            
-            selectedFiles.forEach((file, index) => {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'flex items-center justify-between py-1 border-b border-gray-100';
-                
-                fileItem.innerHTML = `
-                    <div class="flex-1 truncate mr-2">${file.name}</div>
-                    <div class="flex items-center text-xs ${file.status === 'Clean' ? 'text-green-600' : 
-                                                   file.status === 'Infected' ? 'text-red-600' : 
-                                                   'text-gray-500'}">
-                        <span class="mr-2">${file.size ? formatFileSize(file.size) : ''}</span>
-                        <span>${file.status}</span>
-                    </div>
-                `;
-                
-                fileList.appendChild(fileItem);
-            });
-        }
-        
-        // Clear form
-        function clearForm() {
-            customerForm.reset();
-            document.getElementById('customerId').value = '';
-            selectedFiles = [];
-            renderFileList();
-            scanFilesBtn.disabled = true;
-        }
-        
-        // Filter customers based on search input
-        function filterCustomers() {
-            const searchTerm = searchInput.value.toLowerCase();
-            if (!searchTerm) {
-                renderCustomerTable();
-                updatePagination();
-                return;
-            }
-            
-            const filtered = customers.filter(customer => 
-                customer.name.toLowerCase().includes(searchTerm) ||
-                customer.model.toLowerCase().includes(searchTerm) ||
-                customer.phone.includes(searchTerm) ||
-                customer.issue.toLowerCase().includes(searchTerm)
-            );
-            
-            renderCustomerTable(filtered);
-            updatePagination(filtered.length);
-        }
-        
-        // Update pagination controls
-        function updatePagination(total = customers.length) {
-            totalRecords.textContent = total;
-            
-            const pageCount = Math.ceil(total / recordsPerPage);
-            const start = (currentPage - 1) * recordsPerPage + 1;
-            const end = Math.min(currentPage * recordsPerPage, total);
-            
-            showingFrom.textContent = start;
-            showingTo.textContent = end;
-            
-            prevPage.disabled = currentPage === 1;
-            nextPage.disabled = currentPage === pageCount || pageCount === 0;
-        }
-        
-        // Change page
-        function changePage(direction) {
-            const pageCount = Math.ceil(customers.length / recordsPerPage);
-            const newPage = currentPage + direction;
-            
-            if (newPage > 0 && newPage <= pageCount) {
-                currentPage = newPage;
-                renderCustomerTable();
-                updatePagination();
-            }
-        }
-        
-        // Start file scan (simulated)
-        function startFileScan() {
-            if (selectedFiles.length === 0) return;
-            
-            scanProgress.classList.remove('hidden');
-            scanStatus.textContent = 'Preparing to scan files...';
-            
-            let progress = 0;
-            let filesScanned = 0;
-            const totalFiles = selectedFiles.length;
-            const interval = setInterval(() => {
-                progress += 100 / (totalFiles * 10);
-                
-                if (filesScanned < totalFiles && progress >= (filesScanned + 1) * (100 / totalFiles)) {
-                    filesScanned++;
-                    selectedFiles[filesScanned - 1].status = Math.random() > 0.7 ? 'Infected' : 'Clean';
-                    selectedFiles[filesScanned - 1].scanResult = selectedFiles[filesScanned - 1].status === 'Infected' ? 
-                        'Potential threat detected' : 'No threats found';
-                    
-                    scanStatus.textContent = `Scanning ${selectedFiles[filesScanned - 1].name}...`;
-                    renderFileList();
-                }
-                
-                scanBar.style.width = `${Math.min(progress, 100)}%`;
-                scanPercent.textContent = `${Math.min(Math.round(progress), 100)}%`;
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    scanStatus.textContent = 'Scan completed';
-                    
-                    // Update customer record if editing
-                    const customerId = document.getElementById('customerId').value;
-                    if (customerId) {
-                        const customerIndex = customers.findIndex(c => c.id === customerId);
-                        if (customerIndex !== -1) {
-                            customers[customerIndex].files = [...selectedFiles];
-                            customers[customerIndex].scanResults = {
-                                date: new Date().toLocaleString(),
-                                infectedFiles: selectedFiles.filter(f => f.status === 'Infected').length
-                            };
-                            localStorage.setItem('customers', JSON.stringify(customers));
-                        }
-                    }
-                    
-                    showNotification('File scan completed');
-                }
-            }, 300);
-        }
-        
-        // Start device scan (simulated)
-        function startDeviceScan() {
-            scanProgress.classList.remove('hidden');
-            scanStatus.textContent = 'Preparing to scan device...';
-            
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 2;
-                scanBar.style.width = `${progress}%`;
-                scanPercent.textContent = `${progress}%`;
-                
-                // Update status messages
-                if (progress < 30) {
-                    scanStatus.textContent = "Scanning system files...";
-                } else if (progress < 60) {
-                    scanStatus.textContent = "Checking for malware signatures...";
-                } else if (progress < 90) {
-                    scanStatus.textContent = "Analyzing behavior patterns...";
-                } else {
-                    scanStatus.textContent = "Finalizing scan results...";
-                }
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    scanStatus.textContent = 'Device scan completed - No threats found';
-                    showNotification('Device scan completed');
-                }
-            }, 100);
-        }
-        
-        // Export data
-        function exportData() {
-            const dataStr = JSON.stringify(customers, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = 'customer-data.json';
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-            
-            showNotification('Data exported successfully');
-        }
-        
-        // Format file size
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-        }
-        
-        // Show notification
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            document.getElementById('notificationText').textContent = message;
-            notification.classList.remove('hidden');
-            
-            setTimeout(() => {
-                notification.classList.add('hidden');
-            }, 3000);
-        }
-        
-        // Initialize the app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
-</body>
-</html>
+            if (recordId) {
+                // Update existing record
+                records = records.map(rec => 
+                    rec.id === recordId ? { ...recordData, id:
