@@ -27,6 +27,13 @@
             content: " *";
             color: red;
         }
+        .whatsapp-btn {
+            background-color: #25D366;
+            color: white;
+        }
+        .whatsapp-btn:hover {
+            background-color: #128C7E;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -85,6 +92,12 @@
                     </div>
                 </div>
                 
+                <!-- Current Update -->
+                <div id="updateField">
+                    <label for="currentUpdate" class="block text-sm font-medium text-gray-700 mb-1">Current Update</label>
+                    <textarea id="currentUpdate" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Add any new updates about the repair..."></textarea>
+                </div>
+                
                 <!-- Form Actions -->
                 <div class="flex space-x-3 pt-4">
                     <button type="button" id="clearBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md">
@@ -108,7 +121,6 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
@@ -162,13 +174,18 @@
         function saveRepair() {
             // Get form values
             const repairId = document.getElementById('repairId').value;
+            const currentUpdate = document.getElementById('currentUpdate').value;
             const repairData = {
                 date: document.getElementById('date').value,
                 name: document.getElementById('name').value,
                 phone: document.getElementById('phone').value,
                 model: document.getElementById('model').value,
                 issue: document.getElementById('issue').value,
-                status: document.querySelector('input[name="status"]:checked').value
+                status: document.querySelector('input[name="status"]:checked').value,
+                updates: currentUpdate ? [{
+                    date: new Date().toLocaleDateString(),
+                    message: currentUpdate
+                }] : []
             };
             
             // Validate required fields
@@ -181,14 +198,23 @@
                 // Update existing repair
                 const index = repairs.findIndex(r => r.id === repairId);
                 if (index !== -1) {
+                    // Preserve existing updates and add new one
+                    if (repairs[index].updates) {
+                        repairData.updates = [...repairs[index].updates, ...repairData.updates];
+                    }
                     repairs[index] = { ...repairs[index], ...repairData };
                     showNotification('Repair updated successfully');
+                    
+                    // If status changed to "Success", send completion message
+                    if (repairs[index].status === 'Success') {
+                        sendWhatsAppMessage(repairs[index], true);
+                    }
                 }
             } else {
                 // Add new repair
                 const newRepair = {
                     ...repairData,
-                    id: Date.now().toString()
+                    id: Date.now().toString(),
                 };
                 repairs.push(newRepair);
                 showNotification('Repair added successfully');
@@ -200,6 +226,34 @@
             // Refresh the table and clear form
             renderRepairsTable();
             clearForm();
+        }
+        
+        // Send WhatsApp message to client
+        function sendWhatsAppMessage(repair, isCompletion = false) {
+            // Format phone number (remove non-numeric characters)
+            const phone = repair.phone.replace(/\D/g, '');
+            
+            // Create message based on status
+            let message = '';
+            if (isCompletion) {
+                message = `Hi ${repair.name},\n\n` +
+                          `Your ${repair.model} repair is now complete and ready for collection! 🎉\n\n` +
+                          `Repair details: ${repair.issue}\n` +
+                          `Status: Completed ✅\n\n` +
+                          `Please visit us to collect your device.`;
+            } else {
+                message = `Hi ${repair.name},\n\n` +
+                          `Here's an update about your ${repair.model} repair:\n\n` +
+                          `${repair.updates[repair.updates.length - 1].message}\n\n` +
+                          `Current status: ${repair.status === 'Progress' ? 'In Progress 🛠️' : 'Completed ✅'}\n\n` +
+                          `We'll keep you updated on any further progress.`;
+            }
+            
+            // Encode the message for URL
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Open WhatsApp with the message
+            window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
         }
         
         // Render repairs table
@@ -223,7 +277,6 @@
                     <td class="px-6 py-4 whitespace-nowrap">${repair.date}</td>
                     <td class="px-6 py-4 whitespace-nowrap">${repair.name}</td>
                     <td class="px-6 py-4 whitespace-nowrap">${repair.phone}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${repair.model}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="status-badge ${repair.status === 'Success' ? 'status-success' : 'status-progress'}">
                             ${repair.status}
@@ -232,6 +285,9 @@
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button class="text-blue-600 hover:text-blue-900 mr-2 edit-btn" data-id="${repair.id}">
                             <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="whatsapp-btn hover:whatsapp-btn-hover text-white px-3 py-1 rounded-md mr-2 send-btn" data-id="${repair.id}">
+                            <i class="fab fa-whatsapp mr-1"></i>Send Update
                         </button>
                         <button class="text-red-600 hover:text-red-900 delete-btn" data-id="${repair.id}">
                             <i class="fas fa-trash-alt"></i>
@@ -246,6 +302,17 @@
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     loadRepair(this.dataset.id);
+                });
+            });
+            
+            // Add event listeners to WhatsApp buttons
+            document.querySelectorAll('.send-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const repairId = this.dataset.id;
+                    const repair = repairs.find(r => r.id === repairId);
+                    if (repair) {
+                        sendWhatsAppMessage(repair);
+                    }
                 });
             });
             
@@ -269,6 +336,9 @@
             document.getElementById('model').value = repair.model;
             document.getElementById('issue').value = repair.issue;
             document.querySelector(`input[name="status"][value="${repair.status}"]`).checked = true;
+            
+            // Show update field when editing existing repair
+            document.getElementById('updateField').classList.remove('hidden');
             
             // Scroll to form
             repairForm.scrollIntoView({ behavior: 'smooth' });
@@ -294,6 +364,9 @@
             repairForm.reset();
             document.getElementById('repairId').value = '';
             document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('currentUpdate').value = '';
+            // Hide update field for new repairs
+            document.getElementById('updateField').classList.add('hidden');
         }
         
         // Show notification
